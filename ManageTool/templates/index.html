@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<body>
+{#style="background-color: gray"#}
+<input type="button" onclick="PrintTable();" value="Print"/>
+<div id="dvContents">
+<table class="table table-bordered table-hover" id="sortMe">
+    <thead>
+    <tr>
+{#        <th scope="col" data-type="number">#</th>#}
+{#        <th>Id klienta</th>#}
+{#        <th>Typ</th>#}
+{#        <th>Województwo</th>#}
+{#        <th>Miasto</th>#}
+{#        <th>Dzielnica</th>#}
+{#        <th>Nazwa placówki</th>#}
+{#        <th>Ulica</th>#}
+{#        <th data-type="number">Nr domu</th>#}
+{#        <th data-type="number">Nr mieszkania</th>#}
+{#        <th data-type="number">Kod pocztowy</th>#}
+{#        <th>Miejscowość</th>#}
+{#        <th>Opłata dojazdowa</th>#}
+{#        <th>Nazwa firmy</th>#}
+{#        <th>Imię i nazwisko zamawiającego</th>#}
+{#        <th data-type="number">NIP</th>#}
+{#        <th>Adres siedziby</th>#}
+{#        <th data-type="number">Telefon kontaktowy</th>#}
+{#        <th>Adres e-mail</th>#}
+{#        <th>Długość wizyty Mikołaja</th>#}
+{#        <th data-type="number">Data wizyty</th>#}
+{#        <th data-type="number">Przedział godzinowy wizyty</th>#}
+{#        <th data-type="number">Preferowana godzina wizyty</th>#}
+{#        <th>Informacje dodatkowe</th>#}
+{#        <th>Szczegóły zamówienia</th>#}
+        <th>Zgoda marketingowa</th>
+        <th>Przypominajka</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+        <tr>
+            {% autoescape on %}
+                <td>{{ forloop.counter }}</td>
+                <td>00{{ order.bounded_to }}</td>
+                <td>{{ order.type }}</td>
+                <td>{{ order.province }}</td>
+                <td>{{ order.city }}</td>
+                <td>{{ order.district }}</td>
+                <td>{{ order.facility_name }}</td>
+                <td>{{ order.street }}
+                    <a href="http://maps.google.com/maps?t=m&amp;q=
+                            {{ order.street }}&nbsp;{{ order.street_number }}&#44;&nbsp;{{ order.zip_code }}&nbsp;
+                                {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
+                       target="_blank">Pokaż
+                        na mapie</a>
+                </td>
+                <td>{{ order.street_number }}</td>
+                <td>{{ order.house_number }}</td>
+                <td>{{ order.zip_code }}</td>
+                <td>{{ order.town }}</td>
+                <td>{{ order.arrival_fee }}</td>
+                <td>{{ order.company_name }}</td>
+                <td>{{ order.name_surname }}</td>
+                <td>{{ order.nip }}</td>
+                <td>{{ order.facility_address }}
+                    {% if order.facility_address %}
+                        <a href="http://maps.google.com/maps?t=m&amp;q={{ order.facility_address }}"
+                           target="_blank">Pokaż
+                            na mapie</a>
+                    {% endif %}
+                </td>
+                <td>{{ order.phone|safe }}</td>
+                <td>{{ order.email|lower }}
+                    <a href="mailto:{{ order.email }}">Wyślij wiadomość</a>
+                </td>
+                <td>{{ order.visit_length }}</td>
+                <td>{{ order.visit_date }}</td>
+                <td>{{ order.visit_time }}</td>
+                <td>{{ order.pref_visit_time }}</td>
+                <td>{{ order.additional_info }}</td>
+                <td>{{ order.order_details }}</td>
+                <td>{{ order.marketing_approval|yesno:"TAK,NIE" }}</td>
+                <td>{{ order.reminder_approval|yesno:"TAK,NIE" }}</td>
+            {% endautoescape %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const table = document.getElementById('sortMe');
+        const headers = table.querySelectorAll('th');
+        const tableBody = table.querySelector('tbody');
+        const rows = tableBody.querySelectorAll('tr');
+
+        // Track sort directions
+        const directions = Array.from(headers).map(function (header) {
+            return '';
+        });
+
+        // Transform the content of given cell in given column
+        const transform = function (index, content) {
+            // Get the data type of column
+            const type = headers[index].getAttribute('data-type');
+            switch (type) {
+                case 'number':
+                    return parseFloat(content);
+                case 'string':
+                default:
+                    return content;
+            }
+        };
+
+        const sortColumn = function (index) {
+            // Get the current direction
+            const direction = directions[index] || 'asc';
+
+            // A factor based on the direction
+            const multiplier = direction === 'asc' ? 1 : -1;
+
+            const newRows = Array.from(rows);
+
+            newRows.sort(function (rowA, rowB) {
+                const cellA = rowA.querySelectorAll('td')[index].innerHTML;
+                const cellB = rowB.querySelectorAll('td')[index].innerHTML;
+
+                const a = transform(index, cellA);
+                const b = transform(index, cellB);
+
+                switch (true) {
+                    case a > b:
+                        return 1 * multiplier;
+                    case a < b:
+                        return -1 * multiplier;
+                    case a === b:
+                        return 0;
+                }
+            });
+
+            // Remove old rows
+            [].forEach.call(rows, function (row) {
+                tableBody.removeChild(row);
+            });
+
+            // Reverse the direction
+            directions[index] = direction === 'asc' ? 'desc' : 'asc';
+
+            // Append new row
+            newRows.forEach(function (newRow) {
+                tableBody.appendChild(newRow);
+            });
+        };
+
+        [].forEach.call(headers, function (header, index) {
+            header.addEventListener('click', function () {
+                sortColumn(index);
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function PrintTable() {
+        var printWindow = window.open('', '', 'height=200,width=400');
+        printWindow.document.write('<html><head><title>Table Contents</title>');
+
+        //Print the Table CSS.
+        {#var table_style = document.getElementById("table_style").innerHTML;#}
+        {#printWindow.document.write('<style type = "text/css">');#}
+        {#printWindow.document.write(table_style);#}
+        {#printWindow.document.write('</style>');#}
+        {#printWindow.document.write('</head>');#}
+
+        //Print the DIV contents i.e. the HTML Table.
+        printWindow.document.write('<body>');
+        var divContents = document.getElementById("dvContents").innerHTML;
+        printWindow.document.write(divContents);
+        printWindow.document.write('</body>');
+
+        printWindow.document.write('</html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+</script>
+
+</html>
