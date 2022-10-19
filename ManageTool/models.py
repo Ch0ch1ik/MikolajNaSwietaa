@@ -14,6 +14,21 @@ class Vs1YkBaformsSubmissions(models.Model):
         db_table = 'vs1yk_baforms_submissions'
 
 
+class Vs1YkBaformsItems(models.Model):
+    form_id = models.IntegerField()
+    column_id = models.IntegerField()
+    settings = models.TextField()
+    custom = models.CharField(max_length=255)
+    options = models.TextField()
+    parent = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'vs1yk_baforms_items'
+
+
 class Order(models.Model):
     bounded_to = models.IntegerField()
     type = models.CharField(max_length=255)
@@ -26,7 +41,7 @@ class Order(models.Model):
     house_number = models.CharField(max_length=20, blank=True)
     zip_code = models.CharField(max_length=20)
     town = models.CharField(max_length=255, blank=True)
-    arrival_fee = models.CharField(max_length=255, blank=True)
+    arrival_fee = models.SmallIntegerField(default=0)
     company_name = models.CharField(max_length=255, blank=True)
     name_surname = models.CharField(max_length=255)
     nip = models.CharField(max_length=255, blank=True)
@@ -38,8 +53,8 @@ class Order(models.Model):
     visit_time = models.CharField(max_length=255)
     pref_visit_time = models.CharField(max_length=255)
     additional_info = models.TextField()
-    order_details = models.TextField()
+    order_details = models.JSONField(blank=True, null=True)
     marketing_approval = models.BooleanField(default=False)
     reminder_approval = models.BooleanField(default=False)
-    products = models.CharField(max_length=255)
+    products = models.JSONField(default=dict)
 
