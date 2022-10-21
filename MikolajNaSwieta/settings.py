@@ -74,8 +74,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rimarif_mns',
-        'USER': 'root',
-        'PASSWORD': 'J3d3nasc13!',
+        'USER': 'test',
+        'PASSWORD': 'test',
         'HOST': 'localhost',
         'PORT': '3306',
     }
