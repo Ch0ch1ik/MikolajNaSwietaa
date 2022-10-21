@@ -1,5 +1,7 @@
 from django import template
 
+from ManageTool.models import Order
+
 register = template.Library()
 
 
@@ -22,3 +24,18 @@ def dict_sum(dict):
     for k, v in dict:
         result.append(float(k)*float(v))
     return result
+
+
+@register.filter()
+def part_sum(tuple):
+    result = 0
+    for item in tuple:
+        result += float(item[0]) * float(item[1])
+    return result
+
+
+@register.filter()
+def orders_by_province(province):
+    orders = Order.objects.all().filter(province=province)
+    return orders
+

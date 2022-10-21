@@ -222,6 +222,9 @@ class IndexView(View):
         for order in orders:
             for k, v in order.products.items():
                 total += int(k) * int(v)
+        provinces = Order.objects.values_list('province', flat=True).distinct()
+
+
 
         # json_extract(test, "products")
         #     # test = json_extract(test, 'quantity')
@@ -237,7 +240,7 @@ class IndexView(View):
         #         print('Dowóz - do 20 km - 80: '+test)
         #     elif test.__contains__('84":{"1"'):
         #         print('Dowóz - do 10 km - 40: '+test)
-        return render(request, 'index.html', {'orders': orders, 'total': total})
+        return render(request, 'index.html', {'orders': orders, 'total': total, 'provinces': provinces})
 
 
 class Login(View):

@@ -7,157 +7,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
+            integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
 </head>
 
 {#-------------------------------------------------------------------------------------------------------------#}
 <body>
 
-<h2>Zamówione wizyty:</h2>
-<p id="dvContents" class="report-body">
-<table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">
-    <thead>
-    <tr>
-        <th class="no-report" title="Szczegóły"></th>
-        <th class="first" data-type="number">#</th>
-        <th class="first" data-type="number">Id klienta</th>
-        <th class="first">Imię i nazwisko zamawiającego</th>
-        <th class="first">Typ</th>
-        <th class="first">Województwo</th>
-        <th class="text-left,string first">Miasto</th>
-        <th class="text-left,string first">Ulica</th>
-        <th class="text-left,string first">m.</th>
-        <th>Produkt</th>
-        <th>Cena</th>
-        <th>Ilość</th>
-        <th>Suma</th>
-    </tr>
-    </thead>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button"
+                role="tab" aria-controls="home-tab-pane" aria-selected="true">Wszystkie
+        </button>
+    </li>
 
-    <tbody class="first">
-    {% for order in orders %}
-        <tr class="first" data-target="{{ order.bounded_to }}">
-            <td class="no-report">
-                <button type="button" class="btn btn-primary btn-table-expand" title="Szczegóły"><i
-                        class="fa fa-plus"></i>·
-                </button>
-            </td>
-            <td class="first">{{ forloop.counter }}</td>
-            <td class="first">00{{ order.bounded_to }}</td>
-            <td class="first">{{ order.name_surname }}</td>
-            <td class="first">{{ order.type }}</td>
-            <td class="first">{{ order.province }}</td>
-            <td class="first">{{ order.city }}</td>
-            <td class="first">{{ order.street }}&nbsp;{{ order.street_number }}
-                <a href="http://maps.google.com/maps?t=m&amp;q=
-                            {{ order.street }}&nbsp;{{ order.street_number }}&#44;&nbsp;{{ order.zip_code }}&nbsp;
-                                {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
-                   target="_blank">Pokaż
-                    na mapie</a></td>
-            <td class="text-left,string first">{{ order.house_number }}</td>
-            <td>
-                {% for k, v in order.products.items %}
-                    {% if k|to_float <= 120 %}<p>dojazd</p>{% else %}<p>wizyta</p>{% endif %}
-                {% endfor %}
-            </td>
-            <td>
-                {% for k, v in order.products.items %}
-                    {% with  k=k|to_float v=v|to_float %}
-                        <p>{{ k }}</p>
-                    {% endwith %}
-                {% endfor %}
-            </td>
-            <td>
-                {% for k, v in order.products.items %}
-                        <p>{{ v }}</p>
-                {% endfor %}
-            </td>
-            <td>
-                {% for k, v in order.products.items %}
-                    {% with  k=k|to_float v=v|to_float %}
-                        <p>{% widthratio v 1 k %}</p>
-                    {% endwith %}
-                {% endfor %}
-            </td>
-        </tr>
-
-
-        <tr id="{{ order.bounded_to }}" class="second-level">
-            <td colspan="6">
-                <table class="table table-condensed table-bordered table-responsive table-hover report-table">
-                    <tbody>
-
-                    <tr>
-                        <th class="text-left,string">Nazwa firmy</th>
-                        <th class="text-left,string">NIP</th>
-                        <th class="text-center">Telefon kontaktowy</th>
-                        <th class="text-center">Email</th>
-                        <th class="text-center">Dzielnica</th>
-                        <th class="text-center">Kod pocztowy</th>
-                        <th class="text-center">Miejscowość</th>
-                        <th class="text-center">Opłata dojazdowa</th>
-                        <th class="text-center">Nazwa placówki</th>
-                        <th class="text-center">Adres siedziby</th>
-                        <th class="text-center">Zgoda marketingowa</th>
-                        <th class="text-center">Przypominajka</th>
-                    </tr>
-                    <tr>
-                        <td class="text-left">{{ order.facility_name }}</td>
-                        <td class="text-left">{{ order.nip }}</td>
-                        <td>{{ order.phone|safe }}</td>
-                        <td class="text-center">{{ order.email|lower }}
-                            <a href="mailto:{{ order.email }}">napisz @</a></td>
-                        <td class="text-center">{{ order.district }}</td>
-                        <td class="text-center">{{ order.zip_code }}</td>
-                        <td class="text-center">{{ order.town }}</td>
-                        <td class="text-center">{{ order.arrival_fee }}</td>
-                        <td class="text-center">{{ order.facility_name }}</td>
-                        <td class="text-center">{{ order.facility_address }}</td>
-                        <td class="text-center">{{ order.marketing_approval }}</td>
-                        <td class="text-center">{{ order.reminder_approval }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-center">Data wizyty</th>
-                        <th class="text-center">Długość wizyty Mikołaja</th>
-                        <th class="text-center">Przedział godz</th>
-                        <th class="text-center">Pref. godz</th>
-                        <th class="text-center">Informacje dodatkowe</th>
-{#                        <th class="text-center">Szczegóły zamówienia</th>#}
-
-                    </tr>
-                    <tr>
-                        <td class="text-center,datetime">{{ order.visit_date }}</td>
-                        <td class="text-center">{{ order.visit_length }}</td>
-                        <td class="text-center">{{ order.visit_time }}</td>
-                        <td class="text-center">{{ order.pref_visit_time }}</td>
-                        <td class="text-center">{{ order.additional_info }}</td>
-{#                        <td class="text-center">{{ order.order_details }}</td>#}
-
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
+    {% for province in provinces %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="{{ province }}-profile-tab" data-bs-toggle="tab"
+                    data-bs-target="#{{ province }}-profile-tab-pane"
+                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ province }}
+            </button>
+        </li>
     {% endfor %}
-    </tbody>
-    <tfoot>
-    <tr>
-        <th class="no-report" title="Expandir"></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th>Suma:</th>
-        <th class="text-center,string">{{ total|to_float }}</th>
-    </tr>
-    </tfoot>
-</table>
+
+    {#  <li class="nav-item" role="presentation">#}
+    {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
+    {#  </li>#}
+    {#  <li class="nav-item" role="presentation">#}
+    {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
+    {#  </li>#}
+</ul>
+
+<div class="tab-content" id="myTabContent">
+
+    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+         tabindex="0">
+        {% include 'orders_table.html' %}
+    </div>
+    {% for province in provinces %}
+        {% with orders=province|orders_by_province %}
+            <div class="tab-pane fade" id="{{ province }}-profile-tab-pane" role="tabpanel"
+                 aria-labelledby="profile-tab" tabindex="0">
+            {% include 'orders_table.html' %}
+        {% endwith %}
+
+    </div>
+    {% endfor %}
+    {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
+    {#        ...#}
+    {#    </div>#}
+    {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
+    {#        ...#}
+    {#    </div>#}
 </div>
+
+
 </body>
 
 {#---------------------------------------------------------------------------------------------------#}
