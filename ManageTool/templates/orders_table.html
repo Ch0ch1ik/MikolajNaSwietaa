@@ -38,7 +38,7 @@
 
     <tbody class="first">
     {% for order in orders %}
-        <tr class="first" data-target="{{ order.bounded_to }}">
+        <tr class="first" data-target="{{ order.bounded_to }}{{ province }}">
             <td class="no-report">
                 <button type="button" class="btn btn-primary btn-table-expand" title="Szczegóły"><i
                         class="fa fa-plus"></i>·
@@ -93,7 +93,7 @@
         </tr>
 
 
-        <tr id="{{ order.bounded_to }}" class="second-level">
+        <tr id="{{ order.bounded_to }}{{ province }}" class="second-level">
             <td colspan="6">
                 <table class="table table-condensed table-bordered table-responsive table-hover report-table">
                     <tbody>
