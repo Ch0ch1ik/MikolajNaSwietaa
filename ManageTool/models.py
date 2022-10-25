@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -57,4 +58,10 @@ class Order(models.Model):
     marketing_approval = models.BooleanField(default=False)
     reminder_approval = models.BooleanField(default=False)
     products = models.JSONField(default=dict)
+    paid_made = models.BooleanField(default=False)
+    confirmed = models.BooleanField(default=False)
+    cancelled = models.BooleanField(default=False)
+    accomplished = models.BooleanField(default=False)
+    assigned_to = models.ManyToManyField(User, default=None)
+    created = models.CharField(max_length=255, blank=True)
 

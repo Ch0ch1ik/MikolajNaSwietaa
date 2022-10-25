@@ -22,7 +22,7 @@ def to_float(value):
 def dict_sum(dict):
     result = []
     for k, v in dict:
-        result.append(float(k)*float(v))
+        result.append(float(k) * float(v))
     return result
 
 
@@ -39,3 +39,8 @@ def orders_by_province(province):
     orders = Order.objects.all().filter(province=province)
     return orders
 
+
+@register.filter()
+def vat(value):
+    result = value * 1.23
+    return round(result, 2)

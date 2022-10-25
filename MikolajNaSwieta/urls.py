@@ -19,10 +19,16 @@ from django.urls import path
 from ManageTool import views
 
 urlpatterns = [
+    path('test/', views.Test.as_view(), name='testowy'),
     path('admin/', admin.site.urls),
     path('', views.IndexView.as_view(), name='index'),
     path('login/', views.Login.as_view(), name='login'),
     path('logout/', views.Logout.as_view(), name='logout'),
     path('register/', views.Register.as_view(), name='register'),
-    path('test/', views.Test.as_view(), name='testowy'),
+    path('users/', views.Users.as_view(), name='users'),
+    path('confirm_payment/<int:id>', views.confirm_payment, name='confirm_payment'),
+    path('confirm_order/<int:id>', views.confirm_order, name='confirm_order'),
+    path('confirm_accomplished/<int:id>', views.confirm_accomplished, name='confirm_accomplished'),
+    path('cancel_order/<int:id>', views.cancel_order, name='cancel_order'),
+    path('update_order/<int:pk>', views.UpdateOrder.as_view(), name='update_view'),
 ]
