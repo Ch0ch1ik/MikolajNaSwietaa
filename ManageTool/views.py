@@ -15,6 +15,7 @@ from ManageTool.models import Vs1YkBaformsSubmissions, Order
 # Create your views here.
 @method_decorator(login_required(login_url='/login'), name='dispatch')
 class IndexView(View):
+
     def get(self, request):
         items = Vs1YkBaformsSubmissions.objects.all()
         user = request.user
@@ -303,13 +304,6 @@ class Logout(View):
         return redirect('index')
 
 
-class Test(View):
-    def get(self, request):
-        user = request.user
-        orders = Order.objects.all().filter(assigned_to=user)
-        return render(request, 'testowy.html', {'orders': orders})
-
-
 class Users(View):
     def get(self, request):
         users = User.objects.all()
@@ -320,6 +314,7 @@ class Users(View):
 
 
 def confirm_payment(request, id):
+    """Confirm payment for order with given id and redirect to index page"""
     order = Order.objects.get(id=id)
     order.paid_made = True
     order.save()
@@ -327,6 +322,7 @@ def confirm_payment(request, id):
 
 
 def confirm_order(request, id):
+    """Confirm order with given id and redirect to index page"""
     order = Order.objects.get(id=id)
     order.confirmed = True
     order.save()
@@ -334,6 +330,7 @@ def confirm_order(request, id):
 
 
 def cancel_order(request, id):
+    """Cancel order with given id and redirect to index page"""
     order = Order.objects.get(id=id)
     order.cancelled = True
     order.save()
@@ -341,6 +338,7 @@ def cancel_order(request, id):
 
 
 def confirm_accomplished(request, id):
+    """Confirm accomplished order with given id and redirect to testowy page"""
     order = Order.objects.get(id=id)
     order.accomplished = True
     order.save()
@@ -353,4 +351,17 @@ class UpdateOrder(UpdateView):
               'zip_code', 'town', 'arrival_fee', 'company_name', 'name_surname', 'nip', 'facility_address', 'phone',
               'email', 'visit_length', 'visit_date', 'visit_time']
     template_name = 'order_update_form.html'
-    success_url ="/"
+    success_url = "/"
+
+
+class Test(View):
+    def get(self, request):
+        user = request.user
+        orders = Order.objects.all().filter(assigned_to=user)
+
+        messages = Vs1YkBaformsSubmissions.objects.first()
+        message = messages.message
+
+        print(json_extract(message, 'products'))
+
+        return render(request, 'testowy.html', {'orders': orders})

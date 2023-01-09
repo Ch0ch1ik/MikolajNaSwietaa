@@ -6,7 +6,7 @@ from django.db import models
 
 class Vs1YkBaformsSubmissions(models.Model):
     title = models.CharField(max_length=255)
-    message = models.TextField()
+    message = models.JSONField
     date_time = models.CharField(max_length=255)
     submission_state = models.IntegerField()
 
