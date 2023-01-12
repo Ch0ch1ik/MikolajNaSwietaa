@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import UpdateView
@@ -15,8 +16,13 @@ from ManageTool.models import Vs1YkBaformsSubmissions, Order
 # Create your views here.
 @method_decorator(login_required(login_url='/login'), name='dispatch')
 class IndexView(View):
+    """Class based view for index page. It shows all orders and allows to assign them to users. """
+
+
+
 
     def get(self, request):
+
         items = Vs1YkBaformsSubmissions.objects.all()
         user = request.user
         if user.is_superuser:
@@ -53,7 +59,9 @@ class IndexView(View):
             # for k, v in item:
             #     print(k+'TO'+v)
             # print(json_extract(data, 'title'))
+
             for item in items:
+
                 new_order, created = Order.objects.get_or_create(bounded_to=item.id)
                 if created:
                     new_order.type = item.title
@@ -377,3 +385,50 @@ class Test(View):
         orders = Order.objects.all().order_by('cancelled', 'accomplished')
 
         return render(request, 'testowy.html', {'orders': orders})
+
+
+# write a test function to test IndexView
+# def test_index_view(self):
+#     # create a request
+#     request = self.factory.get(reverse('index'))
+#     # get the response
+#     response = IndexView.as_view()(request)
+#     # test the response
+#     self.assertEqual(response.status_code, 200)
+#     self.assertTemplateUsed(response, 'index.html')
+#     self.assertContains(response, 'Zamówienia')
+#     self.assertNotContains(response, 'Hello World!')
+#
+#     # test the context
+#     self.assertEqual(response.context_data['orders'].count(), 3)
+#     self.assertEqual(response.context_data['total'], 3)
+#     self.assertEqual(response.context_data['provinces'].count(), 2)
+#     self.assertEqual(response.context_data['users'].count(), 2)
+#
+#     # test the queryset
+#     self.assertQuerysetEqual(response.context_data['orders'],
+#                              ['<Order: Order 1>', '<Order: Order 2>', '<Order: Order 3>'])
+#     self.assertQuerysetEqual(response.context_data['provinces'],
+#                              ['<Province: Dolnośląskie>', '<Province: Kujawsko-pomorskie>'])
+#     self.assertQuerysetEqual(response.context_data['users'], ['<User: admin>', '<User: test>'])
+#
+#     # test the html
+#     self.assertContains(response, '<h1>Zamówienia</h1>')
+#     self.assertContains(response, '<h2>Wszystkie zamówienia</h2>')
+#     self.assertContains(response, '<h2>Województwa</h2>')
+#     self.assertContains(response, '<h2>Pracownicy</h2>')
+#     self.assertContains(response, '<h3>Województwo: Dolnośląskie</h3>')
+#     self.assertContains(response, '<h3>Województwo: Kujawsko-pomorskie</h3>')
+#     self.assertContains(response, '<h3>Pracownik: admin</h3>')
+#     self.assertContains(response, '<h3>Pracownik: test</h3>')
+#     self.assertContains(response, '<td>Order 1</td>')
+#     self.assertContains(response, '<td>Order 2</td>')
+#     self.assertContains(response, '<td>Order 3</td>')
+#     self.assertContains(response, '<td>admin</td>')
+#     self.assertContains(response, '<td>test</td>')
+#     self.assertContains(response, '<td>1</td>')
+#     self.assertContains(response, '<td>2</td>')
+#     self.assertContains(response, '<td>3</td>')
+
+
+
