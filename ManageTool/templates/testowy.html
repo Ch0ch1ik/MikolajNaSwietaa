@@ -48,6 +48,7 @@
                 <td class="text-center,datetime">{{ order.visit_date }}</td>
                 <td class="text-center">{{ order.pref_visit_time }}</td>
                 <td class="text-center">{{ order.additional_info }}</td>
+                <td class="text-center">{{ order.order_details }}</td>
                 {% if not order.accomplished %}
                     <td style="background-color: rgba(96,0,0,0.34)">
                         {{ order.accomplished }}

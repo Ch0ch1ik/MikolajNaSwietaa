@@ -357,11 +357,23 @@ class UpdateOrder(UpdateView):
 class Test(View):
     def get(self, request):
         user = request.user
-        orders = Order.objects.all().filter(assigned_to=user)
+        orders = Vs1YkBaformsSubmissions.objects.all().first()
 
-        messages = Vs1YkBaformsSubmissions.objects.first()
-        message = messages.message
+        message = eval(orders.message)
+        for mess in message:
+            for k, v in mess.items():
 
-        print(json_extract(message, 'products'))
+                if k == 'message' and len(v) > 300:
+                    # print(v)
+                    true = True
+                    false = False
+
+                    for kk, vv in eval(v).items():
+                        # print(type(vv))
+                        if isinstance(vv, dict):
+                            for key, value in vv.items():
+                                print(key, value)
+
+        orders = Order.objects.all().order_by('cancelled', 'accomplished')
 
         return render(request, 'testowy.html', {'orders': orders})
