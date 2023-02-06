@@ -26,6 +26,7 @@ urlpatterns = [
     path('logout/', views.Logout.as_view(), name='logout'),
     path('register/', views.Register.as_view(), name='register'),
     path('users/', views.Users.as_view(), name='users'),
+    path('applications/', views.ApplicationsView.as_view(), name='applications'),
     path('confirm_payment/<int:id>', views.confirm_payment, name='confirm_payment'),
     path('confirm_order/<int:id>', views.confirm_order, name='confirm_order'),
     path('confirm_accomplished/<int:id>', views.confirm_accomplished, name='confirm_accomplished'),

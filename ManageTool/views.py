@@ -11,7 +11,7 @@ from django.views.generic import UpdateView
 
 from ManageTool.extract import json_extract
 from ManageTool.items_funcs import update_items
-from ManageTool.models import Vs1YkBaformsSubmissions, Order
+from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications
 
 
 # Create your views here.
@@ -82,6 +82,7 @@ class IndexView(View):
                     prices_quantites = dict(zip(prices, quantities))
                     order.products = prices_quantites
                 order.save()
+
             orders = Order.objects.all().order_by('cancelled', 'accomplished')
             total = 0
             for order in orders:
@@ -198,11 +199,11 @@ def cancel_order(request, id):
 
 
 def confirm_accomplished(request, id):
-    """Confirm accomplished order with given id and redirect to testowy page"""
+    """Confirm accomplished order with given id and redirect to index page"""
     order = Order.objects.get(id=id)
     order.accomplished = True
     order.save()
-    return redirect('testowy')
+    return redirect('index')
 
 
 class UpdateOrder(UpdateView):
@@ -237,6 +238,7 @@ class Test(View):
         orders = Order.objects.all().order_by('cancelled', 'accomplished')
 
         return render(request, 'testowy.html', {'orders': orders})
+
 
 # write a test function to test IndexView
 # def test_index_view(self):
@@ -280,3 +282,16 @@ class Test(View):
 #     self.assertContains(response, '<td>1</td>')
 #     self.assertContains(response, '<td>2</td>')
 #     self.assertContains(response, '<td>3</td>')
+
+@method_decorator(login_required, name='dispatch')
+class ApplicationsView(View):
+    def get(self, request):
+        items = Vs1YkBaformsSubmissions.objects.all()
+        user = request.user
+        if user.is_superuser:
+            update_items(items)
+            applications = Applications.objects.all().order_by('hired')
+            regions = Applications.objects.values_list('work_region', flat=True).distinct()
+            return render(request, 'applications.html', {'applications': applications, 'regions': regions})
+        else:
+            return redirect('testowy')

@@ -65,3 +65,22 @@ class Order(models.Model):
     assigned_to = models.ManyToManyField(User, default=None)
     created = models.CharField(max_length=255, blank=True)
 
+
+class Applications(models.Model):
+    bounded_to = models.IntegerField()
+    name_surname = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    position = models.CharField(max_length=255)
+    work_region = models.CharField(max_length=255)
+    age = models.CharField(max_length=255)
+    height = models.CharField(max_length=255)
+    weight = models.CharField(max_length=255)
+    worked_with_children = models.CharField(max_length=255)
+    similar_work_experience = models.CharField(max_length=255)
+    driver_license = models.CharField(max_length=255)
+    car = models.CharField(max_length=255)
+    work_24_12 = models.CharField(max_length=255)
+    desc_and_experience = models.TextField()
+    created = models.CharField(max_length=255, blank=True)
+    hired = models.BooleanField(default=False)

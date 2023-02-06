@@ -1,6 +1,6 @@
 from django import template
 
-from ManageTool.models import Order
+from ManageTool.models import Order, Applications
 
 register = template.Library()
 
@@ -38,6 +38,12 @@ def part_sum(tuple):
 def orders_by_province(province):
     orders = Order.objects.all().filter(province=province)
     return orders
+
+
+@register.filter()
+def applications_by_region(region):
+    applications = Applications.objects.all().filter(work_region=region)
+    return applications
 
 
 @register.filter()
