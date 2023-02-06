@@ -18,7 +18,7 @@
 
 {#-------------------------------------------------------------------------------------------------------------#}
 <body>
-<div style="margin-bottom: 3rem">
+<div style=" margin-bottom: 3rem">
 
 </div>
 
@@ -32,8 +32,8 @@
 
     {% for region in regions %}
         <li class="nav-item" role="presentation">
-            <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region }}-profile-tab" data-bs-toggle="tab"
-                    data-bs-target="#{{ region }}-profile-tab-pane"
+            <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab" data-bs-toggle="tab"
+                    data-bs-target="#{{ region|remove_spaces }}-profile-tab-pane"
                     type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ region }}
             </button>
         </li>
@@ -55,7 +55,7 @@
     </div>
     {% for region in regions %}
         {% with applications=region|applications_by_region %}
-            <div class="tab-pane fade" id="{{ region }}-profile-tab-pane" role="tabpanel"
+            <div class="tab-pane fade" id="{{ region|remove_spaces }}-profile-tab-pane" role="tabpanel"
                  aria-labelledby="profile-tab" tabindex="0">
             {% include 'applications_table.html' %}
         {% endwith %}

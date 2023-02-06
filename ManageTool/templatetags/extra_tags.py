@@ -47,6 +47,12 @@ def applications_by_region(region):
 
 
 @register.filter()
+def remove_spaces(string_with_spaces):
+    string_without_spaces = string_with_spaces.replace(" ", "_")
+    return string_without_spaces
+
+
+@register.filter()
 def vat(value):
     result = value * 1.23
     return round(result, 2)
