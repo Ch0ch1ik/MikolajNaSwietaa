@@ -13,39 +13,39 @@
     <tr class="first">
         <th class="no-report" title="Szczegóły"></th>
         <th class="first" data-type="number">#</th>
-        <th class="first" data-type="number">Id zgłoszenia</th>
-        <th class="text-center">Długość wizyty</th>
+        <th class="first" data-type="number">Id</th>
+
         <th class="first">Imię i nazwisko zamawiającego</th>
-        <th class="text-left,string">Nazwa firmy</th>
+        <th class="first">Telefon</th>
+
         <th class="text-center">Email</th>
-        <th class="text-center">Data wizyty</th>
+        <th class="text-center">Stanowisko</th>
         <th class="first">Województwo</th>
-        <th class="text-left,string first">Miasto</th>
-        <th class="text-center">Miejscowość</th>
-        <th class="text-center">Dzielnica</th>
-        <th class="text-left,string first">Ulica</th>
-        <th class="text-left,string">lok.</th>
-        <th>Produkt</th>
-        <th>Cena</th>
-        <th>Ilość</th>
-        <th>Wartość netto</th>
-        <th>Suma z VAT</th>
-        <th>Potwierdzone</th>
-        <th>Opłacone</th>
-        <th>Mikołaj</th>
+        <th class="text-left,string first">Wiek</th>
+        <th class="text-center, first">Wzrost</th>
+        <th class="text-center, first">Waga</th>
+        <th class="text-left,string first">Doświadczenie w pracy z dziećmi</th>
+        <th class="text-left,string, first">Podobne doświadczenie</th>
+        <th class="text-left,string, first">Prawo jazdy</th>
+        <th class="text-left,string, first">Auto</th>
+        <th class="text-left,string, first">Praca w Wigilię</th>
+        <th class="text-left,string">O sobie</th>
         <th class="first">Data zgłoszenia</th>
+        <th class="first">Punktacja</th>
+        <th class="first">Umówione spotkanie</th>
+
     </tr>
     </thead>
 
     <tbody class="first">
     {% for application in applications %}
 
-            {% if not application.hired %}
-                <tr class="first" data-target="{{ application.bounded_to }}{{ province }}">
-            {% else %}
-                <tr class="first" style="color: gray;
-   pointer-events: none;" data-target="{{ application.bounded_to }}{{ province }}">
-            {% endif %}
+        {% if not application.denied %}
+            <tr class="first" data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
+                {% else %}
+            <tr class="first" style="color: gray;
+   pointer-events: none;" data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
+        {% endif %}
 
 
     <td class="no-report">
@@ -54,187 +54,176 @@
         </button>
     </td>
     <td class="first">{{ forloop.counter }}</td>
-    <td class="first">00{{ application.bounded_to }}</td>
-    <td class="text-center">{{ application.visit_length|safe }}</td>
+    <td class="first">{{ application.bounded_to }}</td>
     <td class="first">{{ application.name_surname }}</td>
-    <td class="text-left">{{ application.facility_name }}</td>
+    <td class="first">{{ application.phone|safe }}</td>
     <td class="text-center">{{ application.email|lower }}
         <a href="mailto:{{ application.email }}">napisz @</a></td>
-    <td class="text-center,datetime">{{ application.visit_date }}</td>
-    <td class="first">{{ application.province }}</td>
-    <td class="first">{{ application.city }}</td>
-    <td class="text-center">{{ application.town }}</td>
-    <td class="text-center">{{ application.district }}</td>
-    <td class="first">{{ application.street }}&nbsp;{{ application.street_number }}
-        <a href="http://maps.google.com/maps?t=m&amp;q=
-                            {{ application.street }}&nbsp;{{ application.street_number }}&#44;&nbsp;{{ application.zip_code }}&nbsp;
-
-                {% if application.town %}{{ application.town }}{% else %}{{ application.city }}{% endif %}"
-           target="_blank">Pokaż
-            na mapie</a></td>
-    <td class="text-left,string">{{ application.house_number }}</td>
-    <td>
-        {% for k, v in application.products.items %}
-            {% if k|to_float <= 120 %}<p>dojazd</p>{% else %}<p>wizyta</p>{% endif %}
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in application.products.items %}
-            {% with  k=k|to_float v=v|to_float %}
-                <p>{{ k|floatformat:2 }}</p>
-            {% endwith %}
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in application.products.items %}
-            <p>{{ v }}</p>
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in application.products.items %}
-            {% with  k=k|to_float v=v|to_float %}
-                <p>{% widthratio v 1 k %}</p>
-            {% endwith %}
-        {% endfor %}
-    </td>
-    <td>
-        {% if application.type == 'Wizyta prywatna' %}
-            {{ application.products.items|part_sum|floatformat:2 }}
-        {% else %}
-            {{ application.products.items|part_sum|vat|floatformat:2 }}
-        {% endif %}
-    </td>
-    {% if not application.confirmed %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            {{ application.confirmed }}
-            <button onclick="return confirm('Czy na pewno chcesz potwierdzić zamówienie?');"><a
-                    style="color: black; text-decoration: none" href="confirm_application/{{ application.id }}">Potwierdź</a>
-            </button>
-        </td>
+    <td class="text-center">{{ application.position }}</td>
+    <td class="first">{{ application.work_region }}</td>
+    <td class="first">{{ application.age }}</td>
+    <td class="text-center, first">{{ application.height }}</td>
+    <td class="text-center, first">{{ application.weight }}</td>
+    <td class="text-center, first">{{ application.worked_with_children }}</td>
+    <td class="text-center, first">{{ application.similar_work_experience }}</td>
+    <td class="text-center, first">{{ application.driver_license }}</td>
+    <td class="text-center, first">{{ application.car }}</td>
+    <td class="text-center, first">{{ application.work_24_12 }}</td>
+    <td class="text-center">{{ application.desc_and_experience }}</td>
+    <td class="text-center, datetime, first">{{ application.created }}</td>
+    <td class="text-center, first">{{ application.score }}</td>
+    {% if application.appointment %}
+        <td style="background-color: rgba(0,128,0,0.47)" class="text-center, first">TAK</td>
     {% else %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            {{ application.confirmed }}
-        </td>
-    {% endif %}
-    {% if application.paid_made %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            {{ application.paid_made }}
-        </td>
-    {% else %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            {{ application.paid_made }}
-            <button onclick="return confirm('Czy na pewno chcesz potwierdzić płatność?');"><a
+        <td style="background-color: rgba(96,0,0,0.34)" class="text-center, first">NIE
+            <button onclick="return confirm('Czy na pewno chcesz oznaczyć jako umówione?');"><a
                     style="color: black; text-decoration: none"
-                    href="confirm_payment/{{ application.id }}">Potwierdź</a>
+                    href="confirm_application/{{ application.id }}">Oznacz jako umówione</a>
             </button>
         </td>
     {% endif %}
+    {#    {% if not application.confirmed %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            {{ application.confirmed }}#}
+    {#            <button onclick="return confirm('Czy na pewno chcesz potwierdzić zamówienie?');"><a#}
+    {#                    style="color: black; text-decoration: none" href="confirm_application/{{ application.id }}">Potwierdź</a>#}
+    {#            </button>#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            {{ application.confirmed }}#}
+    {#        </td>#}
+    {#    {% endif %}#}
+    {#    {% if application.paid_made %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            {{ application.paid_made }}#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            {{ application.paid_made }}#}
+    {#            <button onclick="return confirm('Czy na pewno chcesz potwierdzić płatność?');"><a#}
+    {#                    style="color: black; text-decoration: none"#}
+    {#                    href="confirm_payment/{{ application.id }}">Potwierdź</a>#}
+    {#            </button>#}
+    {#        </td>#}
+    {#    {% endif %}#}
 
 
-    {% if not application.assigned_to.count == 0 %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            <form method="post">
-                {% csrf_token %}
-                <select name="assign">
-                    {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="application_id" value="{{ application.id }}">
-                <input type="submit" value="Przypisz">
-            </form>
-        </td>
-    {% else %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            <form method="post">
-                {% csrf_token %}
-                <select name="assign">
-                    {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="application_id" value="{{ application.id }}">
-                <input type="submit" value="Przypisz">
-            </form>
-        </td>
-    {% endif %}
-    <td class="first">{{ application.created }}</td>
+    {#    {% if not application.assigned_to.count == 0 %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            <form method="post">#}
+    {#                {% csrf_token %}#}
+    {#                <select name="assign">#}
+    {#                    {% for user in users %}#}
+    {#                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>#}
+    {#                    {% endfor %}#}
+    {#                </select>#}
+    {#                <input type="hidden" name="application_id" value="{{ application.id }}">#}
+    {#                <input type="submit" value="Przypisz">#}
+    {#            </form>#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            <form method="post">#}
+    {#                {% csrf_token %}#}
+    {#                <select name="assign">#}
+    {#                    {% for user in users %}#}
+    {#                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>#}
+    {#                    {% endfor %}#}
+    {#                </select>#}
+    {#                <input type="hidden" name="application_id" value="{{ application.id }}">#}
+    {#                <input type="submit" value="Przypisz">#}
+    {#            </form>#}
+    {#        </td>#}
+    {#    {% endif %}#}
+
 
     </tr>
 
 
-        <tr id="{{ application.bounded_to }}{{ province }}" class="second-level">
+        <tr id="{{ application.bounded_to }}{{ region|remove_spaces }}" class="second-level">
             <td colspan="6">
-                <table class="table table-condensed table-bapplicationed table-responsive table-hover report-table">
+                <table class="table table-condensed table-bordered table-responsive table-hover report-table">
                     <tbody>
 
                     <tr>
-                        <th class="text-left,string">Nazwa firmy</th>
-                        <th class="text-left,string">NIP</th>
-                        <th class="text-center">Telefon kontaktowy</th>
-                        <th class="text-center">Email</th>
-                        <th class="text-center">Adres siedziby</th>
-                        <th class="text-center">Zgoda marketingowa</th>
-                        <th class="text-center">Przypominajka</th>
-
-
+                        <th class="text-left,string">Edycja</th>
+                        <th class="text-left,string">Odrzuć</th>
+{#                        <th class="text-center">Telefon kontaktowy</th>#}
+                        {#                        <th class="text-center">Email</th>#}
+                        {#                        <th class="text-center">Adres siedziby</th>#}
+                        {#                        <th class="text-center">Zgoda marketingowa</th>#}
+                        {#                        <th class="text-center">Przypominajka</th>#}
+                        {##}
+                        {##}
                         {#                        <th class="text-center">Opłata dojazdowa</th>#}
                         {#                        <th class="text-center">Nazwa placówki</th>#}
-
+                        {##}
                     </tr>
                     <tr>
-                        <td class="text-left">{{ application.facility_name }}</td>
-                        <td class="text-left">{{ application.nip }}</td>
-                        <td>{{ application.phone|safe }}</td>
-                        <td class="text-center">{{ application.email|lower }}
-                            <a href="mailto:{{ application.email }}">napisz @</a></td>
-                        <td class="text-center">{{ application.facility_address }}</td>
-                        <td class="text-center">{{ application.marketing_approval }}</td>
-                        <td class="text-center">{{ application.reminder_approval }}</td>
-
-
-                        {#                        <td class="text-center">{{ application.arrival_fee }}</td>#}
-                        {#                        <td class="text-center">{{ application.facility_name }}</td>#}
-
-                    </tr>
-                    <tr>
-                        <th class="first">Typ</th>
-                        <th class="text-center">Długość wizyty</th>
-                        <th class="text-center">Data wizyty</th>
-                        <th class="text-center">Przedział godz</th>
-                        <th class="text-center">Pref. godz</th>
-                        <th class="text-center">Informacje dodatkowe</th>
-                        <th class="text-center">Kod pocztowy</th>
-                        <th class="text-center">Anuluj zamówienie</th>
-                        <th>Przypisany</th>
-                        <th>Edytuj</th>
-                        {#                        <th class="text-center">Szczegóły zamówienia</th>#}
-
-                    </tr>
-                    <tr>
-                        <td class="first">{{ application.type }}</td>
-                        <td class="text-center">{{ application.visit_length|safe }}</td>
-                        <td class="text-center,datetime">{{ application.visit_date }}</td>
-                        <td class="text-center">{{ application.visit_time }}</td>
-                        <td class="text-center">{{ application.pref_visit_time }}</td>
-                        <td class="text-center">{{ application.additional_info }}</td>
-                        <td class="text-center">{{ application.zip_code }}</td>
-                        <td>
-                            <button style="background-color: rgba(182,3,3,0.82)"
-                                    onclick="return confirm('Czy na pewno chcesz anulować zamówienie?');"><a
-                                    style="color: black; text-decoration: none;"
-                                    href="cancel_application/{{ application.id }}">Anuluj</a>
+                        <td style="background-color: rgba(96,0,0,0.34)" class="text-center, first">
+                            <button onclick="return confirm('Przejść do edycji pozycji?');"><a
+                                    style="color: black; text-decoration: none"
+                                    href="update_application/{{ application.id }}">EDYTUJ</a>
                             </button>
                         </td>
-                        <td>{% for x in application.assigned_to.all %}{{ x.last_name }}&nbsp
-                            {{ x.first_name }}{% endfor %}</td>
-                        <td>
-                            <a style="color: black; text-decoration: none"
-                               href="update_application/{{ application.id }}">Edytuj</a>
-                        </td>
-                        {#                        <td class="text-center">{{ application.application_details }}</td>#}
 
+                        <td class="text-center, first">
+                            <button style="background-color: rgba(182,3,3,0.82)" onclick="return confirm('Czy na pewno odrzucić tą aplikację?');"><a
+                                    style="color: black; text-decoration: none"
+                                    href="deny_application/{{ application.id }}">ODRZUĆ APLIKACJĘ</a>
+                            </button>
+                        </td>
+{#                        <td>{{ application.phone|safe }}</td>#}
+                        {#                        <td class="text-center">{{ application.email|lower }}#}
+                        {#                            <a href="mailto:{{ application.email }}">napisz @</a></td>#}
+                        {#                        <td class="text-center">{{ application.facility_address }}</td>#}
+                        {#                        <td class="text-center">{{ application.marketing_approval }}</td>#}
+                        {#                        <td class="text-center">{{ application.reminder_approval }}</td>#}
+                        {##}
+                        {##}
+                        {#                        <td class="text-center">{{ application.arrival_fee }}</td>#}
+                        {#                        <td class="text-center">{{ application.facility_name }}</td>#}
+                        {##}
                     </tr>
+                    {#                    <tr>#}
+                    {#                        <th class="first">Typ</th>#}
+                    {#                        <th class="text-center">Długość wizyty</th>#}
+                    {#                        <th class="text-center">Data wizyty</th>#}
+                    {#                        <th class="text-center">Przedział godz</th>#}
+                    {#                        <th class="text-center">Pref. godz</th>#}
+                    {#                        <th class="text-center">Informacje dodatkowe</th>#}
+                    {#                        <th class="text-center">Kod pocztowy</th>#}
+                    {#                        <th class="text-center">Anuluj zamówienie</th>#}
+                    {#                        <th>Przypisany</th>#}
+                    {#                        <th>Edytuj</th>#}
+                    {#                        <th class="text-center">Szczegóły zamówienia</th>#}
+                    {##}
+                    {#                    </tr>#}
+                    {#                    <tr>#}
+                    {#                        <td class="first">{{ application.type }}</td>#}
+                    {#                        <td class="text-center">{{ application.visit_length|safe }}</td>#}
+                    {#                        <td class="text-center,datetime">{{ application.visit_date }}</td>#}
+                    {#                        <td class="text-center">{{ application.visit_time }}</td>#}
+                    {#                        <td class="text-center">{{ application.pref_visit_time }}</td>#}
+                    {#                        <td class="text-center">{{ application.additional_info }}</td>#}
+                    {#                        <td class="text-center">{{ application.zip_code }}</td>#}
+                    {#                        <td>#}
+                    {#                            <button style="background-color: rgba(182,3,3,0.82)"#}
+                    {#                                    onclick="return confirm('Czy na pewno chcesz anulować zamówienie?');"><a#}
+                    {#                                    style="color: black; text-decoration: none;"#}
+                    {#                                    href="cancel_application/{{ application.id }}">Anuluj</a>#}
+                    {#                            </button>#}
+                    {#                        </td>#}
+                    {#                        <td>{% for x in application.assigned_to.all %}{{ x.last_name }}&nbsp#}
+                    {#                            {{ x.first_name }}{% endfor %}</td>#}
+                    {#                        <td>#}
+                    {#                            <a style="color: black; text-decoration: none"#}
+                    {#                               href="update_application/{{ application.id }}">Edytuj</a>#}
+                    {#                        </td>#}
+                    {#                        <td class="text-center">{{ application.application_details }}</td>#}
+                    {##}
+                    {#                    </tr>#}
                     </tbody>
                 </table>
             </td>
@@ -426,15 +415,15 @@
         width: 100%;
         font-size: 0.75em; /*12*/
         line-height: 1.25em; /*15*/
-        bapplication-collapse: collapse;
-        bapplication-spacing: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
     }
 
     .report-table th, .report-table td {
         margin: 0;
         padding: 0.4166em; /*10*/
         vertical-align: top;
-        bapplication: 1px solid #babcbf;
+        border: 1px solid #babcbf;
         background: #fff;
     }
 
@@ -444,11 +433,11 @@
     }
 
     .report-table th:last-child {
-        bapplication-right: 1px solid #BCBABA;
+        border-right: 1px solid #BCBABA;
     }
 
     .report-table td.last, .report-table td:last-child {
-        bapplication-right: 1px solid #C2CAD0;
+        border-right: 1px solid #C2CAD0;
     }
 
     .report-table .even td, .report-table tr:nth-child(even) td {
@@ -458,8 +447,8 @@
     td > table.report-table {
         font-size: 1em !important; /*12*/
         line-height: 1.25em; /*15*/
-        bapplication-collapse: collapse;
-        bapplication-spacing: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
     }
 
     td > table td {

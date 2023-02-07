@@ -84,3 +84,7 @@ class Applications(models.Model):
     desc_and_experience = models.TextField()
     created = models.CharField(max_length=255, blank=True)
     hired = models.BooleanField(default=False)
+    denied = models.BooleanField(default=False)
+    score = models.PositiveSmallIntegerField(default=0)
+    appointment_made = models.BooleanField(default=False)
+    own_notes = models.TextField(blank=True)

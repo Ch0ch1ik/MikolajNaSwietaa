@@ -13,6 +13,7 @@ def update_items(items):
             except ObjectDoesNotExist:
                 new_application = Applications.objects.create(bounded_to=item.id)
                 new_application.created = item.date_time
+                new_application.score = 0
                 data = json.loads(item.message)
                 for mess in data:
                     titles = []
@@ -39,14 +40,25 @@ def update_items(items):
                         elif key == 'Waga (kg)':
                             new_application.weight = value
                         elif key == 'Czy masz doświadczenie w pracy z dziećmi?':
+                            if value == 'TAK':
+                                new_application.score += 1
+                                new_application.experience = True
                             new_application.worked_with_children = value
                         elif key == 'Pracowałeś/aś jako Świety Mikołaj/Elf/Śniezynka?':
+                            if value == 'TAK':
+                                new_application.score += 1
                             new_application.similar_work_experience = value
                         elif key == 'Posiadasz prawo jazdy Kat. B?':
+                            if value == 'TAK':
+                                new_application.score += 2
                             new_application.driver_license = value
                         elif key == 'Czy posiadasz własny środek transportu? (samochód)':
+                            if value == 'TAK':
+                                new_application.score += 2
                             new_application.car = value
                         elif key == 'Czy praca w Wigilię 24 grudnia również Cię interesuje?':
+                            if value == 'TAK':
+                                new_application.score += 3
                             new_application.work_24_12 = value
                         elif key == 'Opisz siebie i swoje doświadczenie w kilku słowach':
                             new_application.desc_and_experience = value

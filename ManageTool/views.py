@@ -206,6 +206,14 @@ def confirm_accomplished(request, id):
     return redirect('index')
 
 
+def confirm_appointment(request, id):
+    """Confirm accomplished order with given id and redirect to index page"""
+    application = Applications.objects.get(id=id)
+    application.appointment_made = True
+    application.save()
+    return redirect('applications')
+
+
 class UpdateOrder(UpdateView):
     model = Order
     fields = ['type', 'province', 'city', 'district', 'facility_name', 'street', 'street_number', 'house_number',
@@ -295,3 +303,20 @@ class ApplicationsView(View):
             return render(request, 'applications.html', {'applications': applications, 'regions': regions})
         else:
             return redirect('testowy')
+
+
+class UpdateApplication(UpdateView):
+    model = Applications
+    fields = ['name_surname', 'phone', 'email', 'position', 'work_region', 'age', 'height', 'weight', 'worked_with_children',
+              'similar_work_experience', 'driver_license', 'car', 'work_24_12', 'desc_and_experience', 'hired', 'denied', 'score',
+              'appointment_made', 'own_notes']
+    template_name = 'application_update_form.html'
+    success_url = "/applications"
+
+
+def deny_application(request, id):
+    """Deny application with given id and redirect to applications page"""
+    application = Applications.objects.get(id=id)
+    application.denied = True
+    application.save()
+    return redirect('applications')
