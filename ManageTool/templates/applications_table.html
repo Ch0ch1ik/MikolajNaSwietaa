@@ -9,24 +9,51 @@
 <h2>Złożone aplikacje:</h2>
 <fieldset style="display: flex; justify-content: left ">
     <div>
-        <input name="rok" type="checkbox" class="checkboxy" value="" checked>
+        <input name="rok" type="checkbox" id="" value="year">
         <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
     </div>
     <div>
-        <input name="appointment" type="checkbox" class="checkboxy" value="">
-        <label for="appointment">Umówione</label>&nbsp;&nbsp;
+        <input type="checkbox" onchange="hideAppointment()">
+        <label for="appointment">Nie umówione</label>&nbsp;&nbsp;
     </div>
     <div>
-        <input name="work_24_12" type="checkbox" class="checkboxy" value="">
+        <input name="work_24_12" type="checkbox" class="checkboxy" value="work_24_12">
         <label for="work_24_12">Praca w Wigilię</label>&nbsp;&nbsp;
     </div>
     <div>
-        <input name="score_over" type="number" class="" value="" max="9" min="1">
+        <input name="score_over" type="number" class="" value="7" max="9" min="1">
         <input name="score" type="checkbox" class="checkboxy" value="">
         <label for="score">Min punktów</label>&nbsp;&nbsp;
     </div>
 
 </fieldset>
+
+<script>
+function hideAppointment() {
+  // Declare variables
+  var filter, table, tr, td, i, txtValue;
+
+  filter = "NIE";
+  table = document.getElementById("sortMe");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[19];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+
+
+</script>
+
 
 <p id="dvContents" class="report-body">
 <table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">

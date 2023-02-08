@@ -1,4 +1,6 @@
+
 import json
+from datetime import datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -334,9 +336,25 @@ def save_note(request, id):
     return redirect('applications')
 
 
-def show_filtered_applications(request):
-    """Show filtered applications"""
-    region = request.GET.getlist()
-    applications = Applications.objects.filter(work_region=region).order_by('denied', 'appointment_made', '-created')
-    regions = Applications.objects.values_list('work_region', flat=True).distinct()
-    return render(request, 'applications.html', {'applications': applications, 'regions': regions})
+# def show_filtered_applications(request):
+#     """Show filtered applications"""
+#     checkboxes = request.GET.getlist('filter_by')
+#     applications = Applications.objects.all()
+#     if checkboxes is not None:
+#         if 'work_24_12' in checkboxes:
+#             applications = applications.filter(work_24_12='TAK')
+#
+#         if 'score' in checkboxes:
+#             # filter by score equal or greater than 'score_over' input
+#             score_over = request.GET['score_over']
+#             applications = applications.filter(score__gte=score_over)
+#
+#         if 'not_appointment_made' in checkboxes:
+#             applications = applications.filter(appointment_made=False)
+#         if 'year' in checkboxes:
+#             curr_year = datetime.now().year
+#             applications = applications.filter(created__startswith=str(curr_year))
+#
+#     applications.order_by('denied', 'appointment_made', '-created')
+#     regions = Applications.objects.values_list('work_region', flat=True).distinct()
+#     return render(request, 'applications.html', {'applications': applications, 'regions': regions})
