@@ -207,7 +207,7 @@ def confirm_accomplished(request, id):
 
 
 def confirm_appointment(request, id):
-    """Confirm accomplished order with given id and redirect to index page"""
+    """Confirm application appointment with given id and redirect to applications page"""
     application = Applications.objects.get(id=id)
     application.appointment_made = True
     application.save()
@@ -298,7 +298,7 @@ class ApplicationsView(View):
         user = request.user
         if user.is_superuser:
             update_items(items)
-            applications = Applications.objects.all().order_by('hired')
+            applications = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
             regions = Applications.objects.values_list('work_region', flat=True).distinct()
             return render(request, 'applications.html', {'applications': applications, 'regions': regions})
         else:
@@ -307,8 +307,10 @@ class ApplicationsView(View):
 
 class UpdateApplication(UpdateView):
     model = Applications
-    fields = ['name_surname', 'phone', 'email', 'position', 'work_region', 'age', 'height', 'weight', 'worked_with_children',
-              'similar_work_experience', 'driver_license', 'car', 'work_24_12', 'desc_and_experience', 'hired', 'denied', 'score',
+    fields = ['name_surname', 'phone', 'email', 'position', 'work_region', 'age', 'height', 'weight',
+              'worked_with_children',
+              'similar_work_experience', 'driver_license', 'car', 'work_24_12', 'desc_and_experience', 'hired',
+              'denied', 'score',
               'appointment_made', 'own_notes']
     template_name = 'application_update_form.html'
     success_url = "/applications"
@@ -320,3 +322,21 @@ def deny_application(request, id):
     application.denied = True
     application.save()
     return redirect('applications')
+
+
+def save_note(request, id):
+    """Save note for application with given id and redirect to applications page"""
+    application = Applications.objects.get(id=id)
+    note_id = 'own_notes' + str(id)
+    note = request.GET[note_id]
+    application.own_notes = note
+    application.save()
+    return redirect('applications')
+
+
+def show_filtered_applications(request):
+    """Show filtered applications"""
+    region = request.GET.getlist()
+    applications = Applications.objects.filter(work_region=region).order_by('denied', 'appointment_made', '-created')
+    regions = Applications.objects.values_list('work_region', flat=True).distinct()
+    return render(request, 'applications.html', {'applications': applications, 'regions': regions})
