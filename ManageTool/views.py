@@ -12,6 +12,7 @@ from django.views import View
 from django.views.generic import UpdateView
 
 from ManageTool.extract import json_extract
+
 from ManageTool.items_funcs import update_items
 from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications
 
@@ -227,27 +228,10 @@ class UpdateOrder(UpdateView):
 
 class Test(View):
     def get(self, request):
-        user = request.user
-        orders = Vs1YkBaformsSubmissions.objects.all().first()
+        # from ManageTool.forms import ContractEmploymentForm
+        # form = ContractEmploymentForm()
 
-        message = eval(orders.message)
-        for mess in message:
-            for k, v in mess.items():
-
-                if k == 'message' and len(v) > 300:
-                    # print(v)
-                    true = True
-                    false = False
-
-                    for kk, vv in eval(v).items():
-                        # print(type(vv))
-                        if isinstance(vv, dict):
-                            for key, value in vv.items():
-                                print(key, value)
-
-        orders = Order.objects.all().order_by('cancelled', 'accomplished')
-
-        return render(request, 'testowy.html', {'orders': orders})
+        return render(request, 'testowy.html')
 
 
 # write a test function to test IndexView
@@ -321,7 +305,10 @@ class UpdateApplication(UpdateView):
 def deny_application(request, id):
     """Deny application with given id and redirect to applications page"""
     application = Applications.objects.get(id=id)
-    application.denied = True
+    if not application.denied:
+        application.denied = True
+    else:
+        application.denied = False
     application.save()
     return redirect('applications')
 
@@ -336,25 +323,43 @@ def save_note(request, id):
     return redirect('applications')
 
 
-# def show_filtered_applications(request):
-#     """Show filtered applications"""
-#     checkboxes = request.GET.getlist('filter_by')
-#     applications = Applications.objects.all()
-#     if checkboxes is not None:
-#         if 'work_24_12' in checkboxes:
-#             applications = applications.filter(work_24_12='TAK')
-#
-#         if 'score' in checkboxes:
-#             # filter by score equal or greater than 'score_over' input
-#             score_over = request.GET['score_over']
-#             applications = applications.filter(score__gte=score_over)
-#
-#         if 'not_appointment_made' in checkboxes:
-#             applications = applications.filter(appointment_made=False)
-#         if 'year' in checkboxes:
-#             curr_year = datetime.now().year
-#             applications = applications.filter(created__startswith=str(curr_year))
-#
-#     applications.order_by('denied', 'appointment_made', '-created')
-#     regions = Applications.objects.values_list('work_region', flat=True).distinct()
-#     return render(request, 'applications.html', {'applications': applications, 'regions': regions})
+def show_filtered_applications(request):
+    """Show filtered applications"""
+    checkboxes = request.GET.getlist('filter_by')
+    applications = Applications.objects.all()
+    score = request.GET.get('score')
+    region = request.GET.get('region')
+    if region is not None:
+        applications = applications.filter(work_region=region)
+        print(region)
+        print(applications)
+    if score is not None:
+        applications = applications.filter(score__gte=score)
+    if checkboxes is not None:
+        if 'work_24_12' in checkboxes:
+            applications = applications.filter(work_24_12='TAK')
+
+        # if 'score_over' in checkboxes:
+        #     # filter by score equal or greater than 'score_over' input
+        #     score_over = request.GET.getlist('score_over')
+        #     print(score_over)
+
+            # applications = applications.filter(score__gte=score_over)
+        if 'not_appointment_made' in checkboxes:
+            applications = applications.filter(appointment_made=False)
+        if 'year' in checkboxes:
+            curr_year = datetime.now().year
+            applications = applications.filter(created__startswith=str(curr_year))
+
+        if 'driver_license' in checkboxes:
+            applications = applications.filter(driver_license='TAK')
+        if 'car' in checkboxes:
+            applications = applications.filter(car='TAK')
+
+    applications.order_by('denied', 'appointment_made', '-created')
+    regions = Applications.objects.values_list('work_region', flat=True).distinct()
+    return render(request, 'applications_table.html', {'applications': applications, 'regions': regions})
+
+
+
+

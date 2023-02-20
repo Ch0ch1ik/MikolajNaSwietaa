@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.forms import DateInput
+from jsignature.fields import JSignatureField
 
 
 # Create your models here.
@@ -88,3 +90,27 @@ class Applications(models.Model):
     score = models.PositiveSmallIntegerField(default=0)
     appointment_made = models.BooleanField(default=False)
     own_notes = models.TextField(blank=True)
+
+
+# contract employment model
+class ContractEmployment(models.Model):
+    signature_date = models.DateField(blank=True, null=True)
+    name_surname = models.CharField(max_length=255)
+    street = models.CharField(max_length=255)
+    street_number = models.CharField(max_length=20)
+    house_number = models.CharField(max_length=20, blank=True)
+    zip_code = models.CharField(max_length=20)
+    town = models.CharField(max_length=255, blank=True)
+    id_number = models.CharField(max_length=255)
+    pesel = models.CharField(max_length=255)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    transport_form = models.CharField(max_length=255)
+    fuel_refund = models.SmallIntegerField(default=0.75)
+    account_number = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    signature = JSignatureField()
+
+
+

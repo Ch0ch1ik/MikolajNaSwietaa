@@ -71,6 +71,10 @@ def update_items(items):
 
                 new_application.save()
 
+        elif item.title == 'Umowa o dzieło stawka godzinowa':
+            pass
+        elif item.title == 'Umowa o dzieło stawka za wizytę':
+            pass
         else:
             try:
                 order = Order.objects.get(bounded_to=item.id)

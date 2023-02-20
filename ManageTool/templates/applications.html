@@ -1,285 +1,209 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load extra_tags %}
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-            integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-            crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-
-</head>
-{% include 'header.html' %}
-
-{#-------------------------------------------------------------------------------------------------------------#}
-<body>
-<div style=" margin-bottom: 3rem">
-
-</div>
+{% extends 'base.html' %}
 
 
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button"
-                role="tab" aria-controls="home-tab-pane" aria-selected="true">Wszystkie
-        </button>
-    </li>
+{% block content %}
 
-    {% for region in regions %}
+    {% load extra_tags %}
+    {% load static %}
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#{{ region|remove_spaces }}-profile-tab-pane"
-                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ region }}
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button"
+                    role="tab" aria-controls="home-tab-pane" aria-selected="true">Wszystkie
             </button>
         </li>
-    {% endfor %}
 
-    {#  <li class="nav-item" role="presentation">#}
-    {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
-    {#  </li>#}
-    {#  <li class="nav-item" role="presentation">#}
-    {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
-    {#  </li>#}
-</ul>
 
-<div class="tab-content" id="myTabContent">
 
-    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-         tabindex="0">
-        {% include 'applications_table.html' %}
+        {% for region in regions %}
+            <li class="nav-item" role="presentation">
+                <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#{{ region|remove_spaces }}-profile-tab-pane"
+                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ region }}
+                </button>
+             <input type="hidden" class="region" value="{{ region }}">
+            </li>
+
+        {% endfor %}
+
+        {#  <li class="nav-item" role="presentation">#}
+        {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
+        {#  </li>#}
+        {#  <li class="nav-item" role="presentation">#}
+        {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
+        {#  </li>#}
+    </ul>
+    <div style="margin-top: 10px">
+        <fieldset style="display: flex; justify-content: left ">
+            <div>
+                <input name="rok" type="checkbox" class="checkboxy" value="year">
+                <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input type="checkbox" class="checkboxy" value="not_appointment_made">
+                <label for="appointment">Nie umówione</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="work_24_12" type="checkbox" class="checkboxy" value="work_24_12">
+                <label for="work_24_12">Praca w Wigilię</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="driver_license" type="checkbox" class="checkboxy" value="driver_license">
+                <label for="driver_license">Prawo jazdy</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="car" type="checkbox" class="checkboxy" value="car">
+                <label for="car">Auto</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input id="score_over" name="score_over" value="0" type="number" max="9" min="0" onchange="show_id()">
+                {#            <input name="score" type="checkbox" class="checkboxy" value="score">#}
+                <label for="score_over">Min punktów</label>&nbsp;&nbsp;
+            </div>
+
+        </fieldset>
     </div>
-    {% for region in regions %}
-        {% with applications=region|applications_by_region %}
-            <div class="tab-pane fade" id="{{ region|remove_spaces }}-profile-tab-pane" role="tabpanel"
-                 aria-labelledby="profile-tab" tabindex="0">
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+             tabindex="0">
             <div id="applications">{% include 'applications_table.html' %}</div>
-        {% endwith %}
+        </div>
+        {% for region in regions %}
+            {% with applications=applications|applications_by_region:region %}
+                <div class="tab-pane fade" id="{{ region|remove_spaces }}-profile-tab-pane" role="tabpanel"
+                     aria-labelledby="profile-tab" tabindex="0">
+
+                <div id="applications">{% include 'applications_table.html' %}</div>
+            {% endwith %}
 
 
 
+        </div>
+        {% endfor %}
+        {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
+        {#        ...#}
+        {#    </div>#}
+        {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
+        {#        ...#}
+        {#    </div>#}
     </div>
-    {% endfor %}
-    {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
-    {#        ...#}
-    {#    </div>#}
-    {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
-    {#        ...#}
-    {#    </div>#}
-</div>
+{% endblock %}
 
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'js/filter_apps.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/table_expand.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/sort_table.js' %}"></script>
+{% endblock %}
 
-</body>
+{% block extra_styling %}
+    <style>
+        body, h1, h2, h3 {
+            margin: 0;
+            font-size: 100%;
+            font-weight: normal;
+        }
 
+        body {
+            padding: 1.25em;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
 
-<script>
-    //
-    $(document).ready(function () {
+        h1 {
+            font-size: 2em;
+        }
 
-        //
-        $('.btn-table-expand').on('click', function () {
-            let $tr = $(this).closest('tr');
+        h2 {
+            font-size: 1.5em;
+        }
 
-            if ($(this).data('expanded') === undefined || $(this).data('expanded') === 'false') {
-                $(this).data('expanded', 'true')
-                $(this).children('i').attr('class', 'fa fa-minus');
-                $('#' + $tr.data('target')).show();
-            } else {
-                $(this).data('expanded', 'false')
-                $(this).children('i').attr('class', 'fa fa-plus');
-                $('#' + $tr.data('target')).hide();
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        const table = document.getElementById('sortMe');
-        const headers = table.querySelectorAll('th.first');
-        const tableBody = table.querySelector('tbody.first');
-        const rows = tableBody.querySelectorAll('tr.first');
+        h1, h2 {
+            margin: .5em 0;
+            font-weight: 500;
+            color: #3A3A3A;
+        }
 
-        // Track sort directions
-        const directions = Array.from(headers).map(function (header) {
-            return '';
-        });
+        p {
+            margin: .5em 0
+        }
 
-        // Transform the content of given cell in given column
-        const transform = function (index, content) {
-            // Get the data type of column
-            const type = headers[index].getAttribute('data-type');
-            switch (type) {
-                case 'number':
-                    return parseFloat(content);
-                case 'string':
-                default:
-                    return content;
-            }
-        };
+        .report-container > table, tr, td, th, tbody, thead, tfoot {
+            page-break-inside: avoid !important;
+            font-size: 1em;
+        }
 
-        const sortColumn = function (index) {
-            // Get the current direction
-            const direction = directions[index] || 'asc';
+        tr.second-level table {
+            width: 95%;
+            float: right;
+        }
 
-            // A factor based on the direction
-            const multiplier = direction === 'asc' ? 1 : -1;
+        tfoot {
+            display: table-row-group
+        }
 
-            const newRows = Array.from(rows);
+        .shrink {
+            white-space: nowrap;
+            width: 1px;
+        }
 
-            newRows.sort(function (rowA, rowB) {
-                const cellA = rowA.querySelectorAll('td.first')[index].innerHTML;
+        .breakhere {
+            page-break-after: always
+        }
 
-                const cellB = rowB.querySelectorAll('td.first')[index].innerHTML;
+        /* {BEGIN} TABLE */
 
+        .report-table {
+            width: 100%;
+            font-size: 0.75em; /*12*/
+            line-height: 1.25em; /*15*/
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
 
-                const a = transform(index, cellA);
-                const b = transform(index, cellB);
+        .report-table th, .report-table td {
+            margin: 0;
+            padding: 0.4166em; /*10*/
+            vertical-align: top;
+            border: 1px solid #babcbf;
+            background: #fff;
+        }
 
-                switch (true) {
-                    case a > b:
-                        return 1 * multiplier;
-                    case a < b:
-                        return -1 * multiplier;
-                    case a === b:
-                        return 0;
-                }
-            });
+        .report-table th {
+            text-align: left;
+            background: rgba(139, 195, 74, 0.60);
+        }
 
-            // Remove old rows
-            [].forEach.call(rows, function (row) {
-                tableBody.removeChild(row);
-            });
+        .report-table th:last-child {
+            border-right: 1px solid #BCBABA;
+        }
 
-            // Reverse the direction
-            directions[index] = direction === 'asc' ? 'desc' : 'asc';
+        .report-table td.last, .report-table td:last-child {
+            border-right: 1px solid #C2CAD0;
+        }
 
-            // Append new row
-            newRows.forEach(function (newRow) {
-                tableBody.appendChild(newRow);
-            });
-        };
+        .report-table .even td, .report-table tr:nth-child(even) td {
+            background: #EEE;
+        }
 
-        [].forEach.call(headers, function (header, index) {
-            header.addEventListener('click', function () {
-                sortColumn(index);
-            });
-        });
-    });
-</script>
+        td > table.report-table {
+            font-size: 1em !important; /*12*/
+            line-height: 1.25em; /*15*/
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
 
-{#---------------------------------------------------------------------------------------------------#}
+        td > table td {
+            background: #FFF !important;
+        }
 
+        /* {END} TABLE */
 
-{#------------------------------------------------------------------------------------------------#}
+        /*.no-report{ display: none;}*/
+        table tr.second-level {
+            display: none;
+        }
 
-
-<style>
-    body, h1, h2, h3 {
-        margin: 0;
-        font-size: 100%;
-        font-weight: normal;
-    }
-
-    body {
-        padding: 1.25em;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    h2 {
-        font-size: 1.5em;
-    }
-
-    h1, h2 {
-        margin: .5em 0;
-        font-weight: 500;
-        color: #3A3A3A;
-    }
-
-    p {
-        margin: .5em 0
-    }
-
-    .report-container > table, tr, td, th, tbody, thead, tfoot {
-        page-break-inside: avoid !important;
-        font-size: 1em;
-    }
-
-    tr.second-level table {
-        width: 95%;
-        float: right;
-    }
-
-    tfoot {
-        display: table-row-group
-    }
-
-    .shrink {
-        white-space: nowrap;
-        width: 1px;
-    }
-
-    .breakhere {
-        page-break-after: always
-    }
-
-    /* {BEGIN} TABLE */
-
-    .report-table {
-        width: 100%;
-        font-size: 0.75em; /*12*/
-        line-height: 1.25em; /*15*/
-        border-collapse: collapse;
-        border-spacing: 0;
-    }
-
-    .report-table th, .report-table td {
-        margin: 0;
-        padding: 0.4166em; /*10*/
-        vertical-align: top;
-        border: 1px solid #babcbf;
-        background: #fff;
-    }
-
-    .report-table th {
-        text-align: left;
-        background: rgba(139, 195, 74, 0.60);
-    }
-
-    .report-table th:last-child {
-        border-right: 1px solid #BCBABA;
-    }
-
-    .report-table td.last, .report-table td:last-child {
-        border-right: 1px solid #C2CAD0;
-    }
-
-    .report-table .even td, .report-table tr:nth-child(even) td {
-        background: #EEE;
-    }
-
-    td > table.report-table {
-        font-size: 1em !important; /*12*/
-        line-height: 1.25em; /*15*/
-        border-collapse: collapse;
-        border-spacing: 0;
-    }
-
-    td > table td {
-        background: #FFF !important;
-    }
-
-    /* {END} TABLE */
-
-    /*.no-report{ display: none;}*/
-    table tr.second-level {
-        display: none;
-    }
-
-</style>
+    </style>
+{% endblock %}

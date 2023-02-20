@@ -1,58 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+
 {% load extra_tags %}
+{% load static %}
 
 
 {#-------------------------------------------------------------------------------------------------------------#}
 
 
 <h2>Złożone aplikacje:</h2>
-<fieldset style="display: flex; justify-content: left ">
-    <div>
-        <input name="rok" type="checkbox" id="" value="year">
-        <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
-    </div>
-    <div>
-        <input type="checkbox" onchange="hideAppointment()">
-        <label for="appointment">Nie umówione</label>&nbsp;&nbsp;
-    </div>
-    <div>
-        <input name="work_24_12" type="checkbox" class="checkboxy" value="work_24_12">
-        <label for="work_24_12">Praca w Wigilię</label>&nbsp;&nbsp;
-    </div>
-    <div>
-        <input name="score_over" type="number" class="" value="7" max="9" min="1">
-        <input name="score" type="checkbox" class="checkboxy" value="">
-        <label for="score">Min punktów</label>&nbsp;&nbsp;
-    </div>
-
-</fieldset>
-
-<script>
-function hideAppointment() {
-  // Declare variables
-  var filter, table, tr, td, i, txtValue;
-
-  filter = "NIE";
-  table = document.getElementById("sortMe");
-  tr = table.getElementsByTagName("tr");
-
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[19];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }
-  }
-}
-
-
-</script>
 
 
 <p id="dvContents" class="report-body">
@@ -86,15 +40,13 @@ function hideAppointment() {
     </thead>
 
     <tbody class="first">
-    {% for application in applications %}
 
+    {% for application in applications %}
         {% if not application.denied %}
             <tr class="first" data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
                 {% else %}
-
             <tr class="first" style="text-decoration: line-through; text-decoration-color: red;
-   pointer-events: none;" data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
-
+                " data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
         {% endif %}
 
 
@@ -128,10 +80,10 @@ function hideAppointment() {
         {% if application.appointment_made %}
             <td style="background-color: rgba(0,128,0,0.47)" class="text-center, first">TAK</td>
         {% else %}
-            <td class="text-center" style="background-color: rgba(96,0,0,0.34)" class="text-center, first">NIE
+            <td class="text-center first" style="background-color: rgba(96,0,0,0.34)">NIE
                 <button onclick="return confirm('Czy na pewno chcesz oznaczyć jako umówione?');"><a
                         style="color: black; text-decoration: none"
-                        href="/confirm_appointment/{{ application.id }}">Oznacz jako umówione</a>
+                        href="{% url 'confirm_appointment' application.id %}">Oznacz jako umówione</a>
                 </button>
             </td>
         {% endif %}
@@ -222,20 +174,35 @@ function hideAppointment() {
                                     href="/update_application/{{ application.id }}">EDYTUJ</a>
                             </button>
                         </td>
-
-                        <td class="text-center, first">
-                            <button style="background-color: rgba(182,3,3,0.82)"
-                                    onclick="return confirm('Czy na pewno odrzucić tą aplikację?');"><a
+                        {% if not application.denied %}
+                            <td class="text-center, first">
+                                <button style="background-color: rgba(182,3,3,0.82)"
+                                        onclick="return confirm('Czy na pewno odrzucić tą aplikację?');"><a
+                                        style="color: black; text-decoration: none"
+                                        href="/deny_application/{{ application.id }}">ODRZUĆ APLIKACJĘ</a>
+                                </button>
+                            </td>
+                        {% else %}
+                            <td class="text-center, first">
+                            <button style="background-color: rgba(0,128,0,0.47)"
+                                    onclick="return confirm('Czy na pewno przywrócić tą aplikację?');"><a
                                     style="color: black; text-decoration: none"
-                                    href="/deny_application/{{ application.id }}">ODRZUĆ APLIKACJĘ</a>
+                                    href="/deny_application/{{ application.id }}">PRZYWRÓĆ APLIKACJĘ</a>
                             </button>
-                        </td>
+                        {% endif %}
+
                         <td class="text-justified">
                             <form method="get" action="{% url 'save_note' application.id %}">
                                 {% csrf_token %}
-                                <input type="text" name="own_notes{{ application.id }}"
-                                       value="{{ application.own_notes }}">
+
+
+                                <textarea name="own_notes{{ application.id }}"
+                                          style="width: 400px; height: 150px; resize: none;"
+                                          placeholder="Wpisz notatkę">{{ application.own_notes }}</textarea>
+
+
                                 <button type="submit">Zapisz</button>
+
                             </form>
                         </td>
                         {#                        <td>{{ application.phone|safe }}</td>#}
@@ -293,6 +260,7 @@ function hideAppointment() {
             </td>
         </tr>
     {% endfor %}
+
     </tbody>
     <tfoot>
     <tr>
@@ -320,9 +288,6 @@ function hideAppointment() {
 </table>
 
 
-{#---------------------------------------------------------------------------------------------------#}
-
-
 <script>
     //
     $(document).ready(function () {
@@ -342,6 +307,7 @@ function hideAppointment() {
             }
         });
     });
+
     document.addEventListener('DOMContentLoaded', function () {
         const table = document.getElementById('sortMe');
         const headers = table.querySelectorAll('th.first');
@@ -415,6 +381,7 @@ function hideAppointment() {
         });
     });
 </script>
+<script type="text/javascript" src="{% static 'js/filter_apps.js' %}"></script>
 
 
 {#------------------------------------------------------------------------------------------------#}

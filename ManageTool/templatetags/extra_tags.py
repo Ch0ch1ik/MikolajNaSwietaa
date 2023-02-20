@@ -41,9 +41,9 @@ def orders_by_province(province):
 
 
 @register.filter()
-def applications_by_region(region):
-    applications = Applications.objects.all().filter(work_region=region)
-    return applications
+def applications_by_region(applications, region):
+    # applications = Applications.objects.all().filter(work_region=region)
+    return applications.filter(work_region=region)
 
 
 @register.filter()
