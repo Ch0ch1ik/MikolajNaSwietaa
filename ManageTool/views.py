@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView
 
 from ManageTool.extract import json_extract
 
@@ -365,3 +365,28 @@ class Test(View):
         applications = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
         regions = Applications.objects.values_list('work_region', flat=True).distinct()
         return render(request, 'testowy.html', {'applications': applications, 'regions': regions, 'positions': positions})
+
+
+class TestListView(ListView):
+    template_name = 'testowy.html'
+    model = Applications
+    context_object_name = 'applications'
+    paginate_by = 50
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['regions'] = Applications.objects.values_list('work_region', flat=True).distinct()
+        context['positions'] = Applications.objects.values_list('position', flat=True).distinct()
+        return context
+
+    def get_queryset(self):
+        queryset = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
+        region = self.request.GET.get('region')
+        if region is not None:
+            if region == 'Wszystkie':
+                pass
+            else:
+                queryset = queryset.filter(work_region=region)
+        return queryset
+
+

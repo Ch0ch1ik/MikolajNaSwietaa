@@ -37,4 +37,5 @@ urlpatterns = [
     path('cancel_order/<int:id>', views.cancel_order, name='cancel_order'),
     path('update_order/<int:pk>', views.UpdateOrder.as_view(), name='update_view'),
     path('show_filtered_applications/', views.show_filtered_applications, name='show_filtered_applications'),
+    path('test2/', views.TestListView.as_view(), name='testowy2'),
 ]
