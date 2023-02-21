@@ -68,7 +68,7 @@
             </div>
             <div>
                 <label for="stanowiska">Stanowisko</label>
-                <select id="stanowiska">
+                <select id="stanowiska" onchange="show_id()">
                     {% for position in positions %}
                         <option value="{{ position }}">{{ position }}</option>
                     {% endfor %}

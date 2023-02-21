@@ -323,11 +323,15 @@ def show_filtered_applications(request):
     applications = Applications.objects.all()
     score = request.GET.get('score')
     region = request.GET.get('region')
+    position = request.GET.get('position')
     if region is not None:
         if region == 'Wszystkie':
             pass
         else:
             applications = applications.filter(work_region=region)
+    if position is not None:
+        applications = applications.filter(position=position)
+
     if score is not None:
         applications = applications.filter(score__gte=score)
     if checkboxes is not None:
@@ -362,7 +366,7 @@ class Test(View):
         # from ManageTool.forms import ContractEmploymentForm
         # form = ContractEmploymentForm()
         positions = Applications.objects.values_list('position', flat=True).distinct()
-        applications = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
+        applications = Applications.objects.all().filter(position=positions[0]).order_by('denied', 'appointment_made', '-created')
         regions = Applications.objects.values_list('work_region', flat=True).distinct()
         return render(request, 'testowy.html', {'applications': applications, 'regions': regions, 'positions': positions})
 

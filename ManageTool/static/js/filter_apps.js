@@ -7,11 +7,13 @@ function show_id(event) {
     var score = document.getElementById("score_over").value;
     // var regions = document.querySelectorAll('input[type="hidden"].region');
     var region = get_region();
+    var position = get_position();
     // var regions_list = [];
 
     // regions.forEach(region => regions_list.push(region.value));
     // regions_list.forEach(region => params.append("regions", region));
     params.append("region", region);
+    params.append("position", position);
     params.append("score", score);
     ids.forEach(id => params.append("filter_by", id))
 
@@ -21,6 +23,12 @@ function show_id(event) {
         .then(response => response.text())
         .then(data => document.getElementById("applications").innerHTML = data);
 
+}
+
+function get_position() {
+    var position = document.getElementById("stanowiska");
+
+    return position.value;
 }
 
 function get_region() {
