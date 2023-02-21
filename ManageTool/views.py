@@ -1,4 +1,3 @@
-
 import json
 from datetime import datetime
 
@@ -226,12 +225,7 @@ class UpdateOrder(UpdateView):
     success_url = "/"
 
 
-class Test(View):
-    def get(self, request):
-        # from ManageTool.forms import ContractEmploymentForm
-        # form = ContractEmploymentForm()
 
-        return render(request, 'testowy.html')
 
 
 # write a test function to test IndexView
@@ -330,9 +324,10 @@ def show_filtered_applications(request):
     score = request.GET.get('score')
     region = request.GET.get('region')
     if region is not None:
-        applications = applications.filter(work_region=region)
-        print(region)
-        print(applications)
+        if region == 'Wszystkie':
+            pass
+        else:
+            applications = applications.filter(work_region=region)
     if score is not None:
         applications = applications.filter(score__gte=score)
     if checkboxes is not None:
@@ -344,7 +339,7 @@ def show_filtered_applications(request):
         #     score_over = request.GET.getlist('score_over')
         #     print(score_over)
 
-            # applications = applications.filter(score__gte=score_over)
+        # applications = applications.filter(score__gte=score_over)
         if 'not_appointment_made' in checkboxes:
             applications = applications.filter(appointment_made=False)
         if 'year' in checkboxes:
@@ -358,8 +353,15 @@ def show_filtered_applications(request):
 
     applications.order_by('denied', 'appointment_made', '-created')
     regions = Applications.objects.values_list('work_region', flat=True).distinct()
-    return render(request, 'applications_table.html', {'applications': applications, 'regions': regions})
+    return render(request, 'tbody.html', {'applications': applications, 'regions': regions})
 
 
 
-
+class Test(View):
+    def get(self, request):
+        # from ManageTool.forms import ContractEmploymentForm
+        # form = ContractEmploymentForm()
+        positions = Applications.objects.values_list('position', flat=True).distinct()
+        applications = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
+        regions = Applications.objects.values_list('work_region', flat=True).distinct()
+        return render(request, 'testowy.html', {'applications': applications, 'regions': regions, 'positions': positions})

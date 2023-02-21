@@ -1,14 +1,253 @@
 {% extends 'base.html' %}
 
 
+{% block content %}
+
+    {% load extra_tags %}
+    {% load static %}
+
+<p>{{ message }}</p>
 
 
 
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button"
+                    role="tab" aria-controls="home-tab-pane"
+                    aria-selected="true">Wszystkie</button>
+        </li>
 
-<script>
 
 
-</script>
+        {% for region in regions %}
+            <li class="nav-item" role="presentation">
+                <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#home-tab-pane"
+                        type="button" role="tab" aria-controls="home-tab-pane"
+                        aria-selected="false">{{ region }}</button>
+                <input type="hidden" class="region" value="{{ region }}">
+            </li>
+
+        {% endfor %}
+
+        {#  <li class="nav-item" role="presentation">#}
+        {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
+        {#  </li>#}
+        {#  <li class="nav-item" role="presentation">#}
+        {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
+        {#  </li>#}
+    </ul>
+    <div style="margin-top: 10px">
+        <fieldset style="display: flex; justify-content: left; align-content: space-evenly ">
+            <div>
+                <input name="rok" type="checkbox" class="checkboxy" value="year">
+                <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input type="checkbox" class="checkboxy" value="not_appointment_made">
+                <label for="appointment">Nie umówione</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="work_24_12" type="checkbox" class="checkboxy" value="work_24_12">
+                <label for="work_24_12">Praca w Wigilię</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="driver_license" type="checkbox" class="checkboxy" value="driver_license">
+                <label for="driver_license">Prawo jazdy</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="car" type="checkbox" class="checkboxy" value="car">
+                <label for="car">Auto</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input id="score_over" name="score_over" value="0" type="number" max="9" min="0" onchange="show_id()">
+                {#            <input name="score" type="checkbox" class="checkboxy" value="score">#}
+                <label for="score_over">Min punktów</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <label for="stanowiska">Stanowisko</label>
+                <select id="stanowiska">
+                    {% for position in positions %}
+                        <option value="{{ position }}">{{ position }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </fieldset>
+    </div>
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+             tabindex="0">
+            <div>{% include 'applications_table.html' %}</div>
+        </div>
+        {#        {% for region in regions %}#}
+
+        {#        <div class="tab-pane fade" id="-profile-tab-pane" role="tabpanel"#}
+        {#             aria-labelledby="profile-tab" tabindex="0">#}
+        {##}
+        {##}
+        {##}
+        {##}
+        {#        </div>#}
+        {#        {% endfor %}#}
+        {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
+        {#        ...#}
+        {#    </div>#}
+        {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
+        {#        ...#}
+        {#    </div>#}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        let div_to_observe = document.getElementById('applications');
+
+        const config = {childList: true, subtree: true};
+
+        // Callback function to execute when mutations are observed
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    console.log('A child node has been added or removed.');
+
+                    function reload_js(src) {
+                        $('script[src="' + src + '"]').remove();
+                        $('<script>').attr('src', src).appendTo('head');
+                    }
+
+                    reload_js('/static/js/table_expand.js');
+                    {#reload_js('/static/js/sort_table.js');#}
 
 
+                } else {
+                    console.log(`cos innego się wydarzyło: ${mutation.type}`);
+                }
+            }
+        };
 
+        // Create an observer instance linked to the callback function
+        const observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(div_to_observe, config);
+
+        {#observer.disconnect();#}
+
+    </script>
+
+
+{% endblock %}
+
+{% block extra_styling %}
+    <style>
+        body, h1, h2, h3 {
+            margin: 0;
+            font-size: 100%;
+            font-weight: normal;
+        }
+
+        body {
+            padding: 1.25em;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+        }
+
+        h1, h2 {
+            margin: .5em 0;
+            font-weight: 500;
+            color: #3A3A3A;
+        }
+
+        p {
+            margin: .5em 0
+        }
+
+        .report-container > table, tr, td, th, tbody, thead, tfoot {
+            page-break-inside: avoid !important;
+            font-size: 1em;
+        }
+
+        tr.second-level table {
+            width: 95%;
+            float: right;
+        }
+
+        tfoot {
+            display: table-row-group
+        }
+
+        .shrink {
+            white-space: nowrap;
+            width: 1px;
+        }
+
+        .breakhere {
+            page-break-after: always
+        }
+
+        /* {BEGIN} TABLE */
+
+        .report-table {
+            width: 100%;
+            font-size: 0.75em; /*12*/
+            line-height: 1.25em; /*15*/
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .report-table th, .report-table td {
+            margin: 0;
+            padding: 0.4166em; /*10*/
+            vertical-align: top;
+            border: 1px solid #babcbf;
+            background: #fff;
+        }
+
+        .report-table th {
+            text-align: left;
+            background: rgba(139, 195, 74, 0.60);
+        }
+
+        .report-table th:last-child {
+            border-right: 1px solid #BCBABA;
+        }
+
+        .report-table td.last, .report-table td:last-child {
+            border-right: 1px solid #C2CAD0;
+        }
+
+        .report-table .even td, .report-table tr:nth-child(even) td {
+            background: #EEE;
+        }
+
+        td > table.report-table {
+            font-size: 1em !important; /*12*/
+            line-height: 1.25em; /*15*/
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        td > table td {
+            background: #FFF !important;
+        }
+
+        /* {END} TABLE */
+
+        /*.no-report{ display: none;}*/
+        table tr.second-level {
+            display: none;
+        }
+
+    </style>
+{% endblock %}

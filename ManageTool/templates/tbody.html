@@ -1,0 +1,223 @@
+{% load extra_tags %}
+{% load static %}
+
+{% for application in applications %}
+        {% if not application.denied %}
+            <tr class="first" data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
+                {% else %}
+            <tr class="first" style="text-decoration: line-through; text-decoration-color: red;
+                " data-target="{{ application.bounded_to }}{{ region|remove_spaces }}">
+        {% endif %}
+
+
+    <td class="no-report">
+        <button type="button" class="btn btn-primary btn-table-expand" title="Szczegóły"><i
+                class="fa fa-plus"></i>·
+        </button>
+    </td>
+    <td class="first">{{ forloop.counter }}</td>
+    <td class="first">{{ application.bounded_to }}</td>
+    <td class="first">{{ application.name_surname }}</td>
+    <td class="first">{{ application.phone|safe }}</td>
+    <td class="text-center">{{ application.email|lower }}
+        <a href="mailto:{{ application.email }}">napisz @</a></td>
+    <td class="text-center">{{ application.position }}</td>
+    <td class="first">{{ application.work_region }}</td>
+    <td class="first">{{ application.age }}</td>
+    <td class="text-center, first">{{ application.height }}</td>
+    <td class="text-center, first">{{ application.weight }}</td>
+    <td class="text-center, first">{{ application.worked_with_children }}</td>
+    <td class="text-center, first">{{ application.similar_work_experience }}</td>
+    <td class="text-center, first">{{ application.driver_license }}</td>
+    <td class="text-center, first">{{ application.car }}</td>
+    <td class="text-center, first">{{ application.work_24_12 }}</td>
+    <td class="text-center">{{ application.desc_and_experience }}</td>
+    <td class="text-center, datetime, first">{{ application.created }}</td>
+    <td class="text-center, first">{{ application.score }}</td>
+    {% if application.denied %}
+        <td>Odrzucona</td>
+    {% else %}
+        {% if application.appointment_made %}
+            <td style="background-color: rgba(0,128,0,0.47)" class="text-center, first">TAK</td>
+        {% else %}
+            <td class="text-center first" style="background-color: rgba(96,0,0,0.34)">NIE
+                <button onclick="return confirm('Czy na pewno chcesz oznaczyć jako umówione?');"><a
+                        style="color: black; text-decoration: none"
+                        href="{% url 'confirm_appointment' application.id %}">Oznacz jako umówione</a>
+                </button>
+            </td>
+        {% endif %}
+    {% endif %}
+    {#    {% if not application.confirmed %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            {{ application.confirmed }}#}
+    {#            <button onclick="return confirm('Czy na pewno chcesz potwierdzić zamówienie?');"><a#}
+    {#                    style="color: black; text-decoration: none" href="confirm_application/{{ application.id }}">Potwierdź</a>#}
+    {#            </button>#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            {{ application.confirmed }}#}
+    {#        </td>#}
+    {#    {% endif %}#}
+    {#    {% if application.paid_made %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            {{ application.paid_made }}#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            {{ application.paid_made }}#}
+    {#            <button onclick="return confirm('Czy na pewno chcesz potwierdzić płatność?');"><a#}
+    {#                    style="color: black; text-decoration: none"#}
+    {#                    href="confirm_payment/{{ application.id }}">Potwierdź</a>#}
+    {#            </button>#}
+    {#        </td>#}
+    {#    {% endif %}#}
+
+
+    {#    {% if not application.assigned_to.count == 0 %}#}
+    {#        <td style="background-color: rgba(0,128,0,0.47)">#}
+    {#            <form method="post">#}
+    {#                {% csrf_token %}#}
+    {#                <select name="assign">#}
+    {#                    {% for user in users %}#}
+    {#                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>#}
+    {#                    {% endfor %}#}
+    {#                </select>#}
+    {#                <input type="hidden" name="application_id" value="{{ application.id }}">#}
+    {#                <input type="submit" value="Przypisz">#}
+    {#            </form>#}
+    {#        </td>#}
+    {#    {% else %}#}
+    {#        <td style="background-color: rgba(96,0,0,0.34)">#}
+    {#            <form method="post">#}
+    {#                {% csrf_token %}#}
+    {#                <select name="assign">#}
+    {#                    {% for user in users %}#}
+    {#                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>#}
+    {#                    {% endfor %}#}
+    {#                </select>#}
+    {#                <input type="hidden" name="application_id" value="{{ application.id }}">#}
+    {#                <input type="submit" value="Przypisz">#}
+    {#            </form>#}
+    {#        </td>#}
+    {#    {% endif %}#}
+
+
+    </tr>
+
+
+        <tr id="{{ application.bounded_to }}{{ region|remove_spaces }}" class="second-level">
+            <td colspan="6">
+                <table class="table table-condensed table-bordered table-responsive table-hover report-table">
+                    <tbody>
+
+                    <tr>
+                        <th class="text-left,string">Edycja</th>
+                        <th class="text-left,string">Odrzuć</th>
+                        <th class="text-left,string">Notatki</th>
+                        {#                        <th class="text-center">Telefon kontaktowy</th>#}
+                        {#                        <th class="text-center">Email</th>#}
+                        {#                        <th class="text-center">Adres siedziby</th>#}
+                        {#                        <th class="text-center">Zgoda marketingowa</th>#}
+                        {#                        <th class="text-center">Przypominajka</th>#}
+                        {##}
+                        {##}
+                        {#                        <th class="text-center">Opłata dojazdowa</th>#}
+                        {#                        <th class="text-center">Nazwa placówki</th>#}
+                        {##}
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgba(96,0,0,0.34)" class="text-center, first">
+                            <button onclick="return confirm('Przejść do edycji pozycji?');"><a
+                                    style="color: black; text-decoration: none"
+                                    href="/update_application/{{ application.id }}">EDYTUJ</a>
+                            </button>
+                        </td>
+                        {% if not application.denied %}
+                            <td class="text-center, first">
+                                <button style="background-color: rgba(182,3,3,0.82)"
+                                        onclick="return confirm('Czy na pewno odrzucić tą aplikację?');"><a
+                                        style="color: black; text-decoration: none"
+                                        href="/deny_application/{{ application.id }}">ODRZUĆ APLIKACJĘ</a>
+                                </button>
+                            </td>
+                        {% else %}
+                            <td class="text-center, first">
+                            <button style="background-color: rgba(0,128,0,0.47)"
+                                    onclick="return confirm('Czy na pewno przywrócić tą aplikację?');"><a
+                                    style="color: black; text-decoration: none"
+                                    href="/deny_application/{{ application.id }}">PRZYWRÓĆ APLIKACJĘ</a>
+                            </button>
+                        {% endif %}
+
+                        <td class="text-justified">
+                            <form method="get" action="{% url 'save_note' application.id %}">
+                                {% csrf_token %}
+
+
+                                <textarea name="own_notes{{ application.id }}"
+                                          style="width: 400px; height: 150px; resize: none;"
+                                          placeholder="Wpisz notatkę">{{ application.own_notes }}</textarea>
+
+
+                                <button type="submit">Zapisz</button>
+
+                            </form>
+                        </td>
+                        {#                        <td>{{ application.phone|safe }}</td>#}
+                        {#                        <td class="text-center">{{ application.email|lower }}#}
+                        {#                            <a href="mailto:{{ application.email }}">napisz @</a></td>#}
+                        {#                        <td class="text-center">{{ application.facility_address }}</td>#}
+                        {#                        <td class="text-center">{{ application.marketing_approval }}</td>#}
+                        {#                        <td class="text-center">{{ application.reminder_approval }}</td>#}
+                        {##}
+                        {##}
+                        {#                        <td class="text-center">{{ application.arrival_fee }}</td>#}
+                        {#                        <td class="text-center">{{ application.facility_name }}</td>#}
+                        {##}
+                    </tr>
+                    {#                    <tr>#}
+                    {#                        <th class="first">Typ</th>#}
+                    {#                        <th class="text-center">Długość wizyty</th>#}
+                    {#                        <th class="text-center">Data wizyty</th>#}
+                    {#                        <th class="text-center">Przedział godz</th>#}
+                    {#                        <th class="text-center">Pref. godz</th>#}
+                    {#                        <th class="text-center">Informacje dodatkowe</th>#}
+                    {#                        <th class="text-center">Kod pocztowy</th>#}
+                    {#                        <th class="text-center">Anuluj zamówienie</th>#}
+                    {#                        <th>Przypisany</th>#}
+                    {#                        <th>Edytuj</th>#}
+                    {#                        <th class="text-center">Szczegóły zamówienia</th>#}
+                    {##}
+                    {#                    </tr>#}
+                    {#                    <tr>#}
+                    {#                        <td class="first">{{ application.type }}</td>#}
+                    {#                        <td class="text-center">{{ application.visit_length|safe }}</td>#}
+                    {#                        <td class="text-center,datetime">{{ application.visit_date }}</td>#}
+                    {#                        <td class="text-center">{{ application.visit_time }}</td>#}
+                    {#                        <td class="text-center">{{ application.pref_visit_time }}</td>#}
+                    {#                        <td class="text-center">{{ application.additional_info }}</td>#}
+                    {#                        <td class="text-center">{{ application.zip_code }}</td>#}
+                    {#                        <td>#}
+                    {#                            <button style="background-color: rgba(182,3,3,0.82)"#}
+                    {#                                    onclick="return confirm('Czy na pewno chcesz anulować zamówienie?');"><a#}
+                    {#                                    style="color: black; text-decoration: none;"#}
+                    {#                                    href="cancel_application/{{ application.id }}">Anuluj</a>#}
+                    {#                            </button>#}
+                    {#                        </td>#}
+                    {#                        <td>{% for x in application.assigned_to.all %}{{ x.last_name }}&nbsp#}
+                    {#                            {{ x.first_name }}{% endfor %}</td>#}
+                    {#                        <td>#}
+                    {#                            <a style="color: black; text-decoration: none"#}
+                    {#                               href="update_application/{{ application.id }}">Edytuj</a>#}
+                    {#                        </td>#}
+                    {#                        <td class="text-center">{{ application.application_details }}</td>#}
+                    {##}
+                    {#                    </tr>#}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    {% endfor %}
+

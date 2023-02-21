@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     const table = document.getElementById('sortMe');
+
     const headers = table.querySelectorAll('th.first');
     const tableBody = table.querySelector('tbody.first');
     const rows = tableBody.querySelectorAll('tr.first');
