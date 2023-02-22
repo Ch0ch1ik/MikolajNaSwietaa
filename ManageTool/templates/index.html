@@ -1,161 +1,96 @@
 {% extends 'base.html' %}
-
+{% load extra_tags %}
+{% load static %}
 {% block content %}
-    {% load extra_tags %}
-    {% load static %}
-
-    <p>{{ message }}</p>
-
-
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
                     type="button"
-                    role="tab" aria-controls="home-tab-pane" aria-selected="true">Wszystkie
-            </button>
+                    role="tab" aria-controls="home-tab-pane"
+                    aria-selected="true">Wszystkie</button>
         </li>
 
         {% for province in provinces %}
+
             <li class="nav-item" role="presentation">
                 <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ province }}-profile-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#home-tab-pane"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ province }}
-                </button>
+                        type="button" role="tab" aria-controls="home-tab-pane"
+                        aria-selected="false">{{ province }}</button>
+                <input type="hidden" class="region" value="{{ province }}">
             </li>
-        {% endfor %}
 
-        {#  <li class="nav-item" role="presentation">#}
-        {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
-        {#  </li>#}
-        {#  <li class="nav-item" role="presentation">#}
-        {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
-        {#  </li>#}
+        {% endfor %}
     </ul>
 
-    <div class="tab-content" id="myTabContent">
+    <div style="margin-top: 10px">
+        <fieldset style="display: flex; justify-content: left; align-content: space-evenly ">
+            <div>
+                <input name="rok" type="checkbox" class="checkboxy" value="year">
+                <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="confirmation" type="checkbox" class="checkboxy" value="not_confirmed">
+                <label for="confirmation">Nie potwierdzone</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="payment" type="checkbox" class="checkboxy" value="not_paid">
+                <label for="payment">Nie opłacone</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <input name="santa" type="checkbox" class="checkboxy" value="santa">
+                <label for="santa">Bez mikołaja</label>&nbsp;&nbsp;
+            </div>
+            <div>
+                <label for="typ_wizyty">Typ wizyty</label>
+                <select id="typ_wizyty" onchange="show_id()">
+                    {% for visit_type in visit_types %}
+                        <option value="{{ visit_type }}">{{ visit_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </fieldset>
+    </div>
 
+    <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
              tabindex="0">
             {% include 'orders_table.html' %}
         </div>
-        {% for province in provinces %}
-            {% with orders=province|orders_by_province %}
-                <div class="tab-pane fade" id="{{ province }}-profile-tab-pane" role="tabpanel"
-                     aria-labelledby="profile-tab" tabindex="0">
-                {% include 'orders_table.html' %}
-            {% endwith %}
-
-
-
-
-        <script>
-            //
-            $(document).ready(function () {
-
-                //
-                $('.btn-table-expand').on('click', function () {
-                    let $tr = $(this).closest('tr');
-
-                    if ($(this).data('expanded') === undefined || $(this).data('expanded') === 'false') {
-                        $(this).data('expanded', 'true')
-                        $(this).children('i').attr('class', 'fa fa-minus');
-                        $('#' + $tr.data('target')).show();
-                    } else {
-                        $(this).data('expanded', 'false')
-                        $(this).children('i').attr('class', 'fa fa-plus');
-                        $('#' + $tr.data('target')).hide();
-                    }
-                });
-            });
-            document.addEventListener('DOMContentLoaded', function () {
-                const table = document.getElementById('sortMe');
-                const headers = table.querySelectorAll('th.first');
-                const tableBody = table.querySelector('tbody.first');
-                const rows = tableBody.querySelectorAll('tr.first');
-
-                // Track sort directions
-                const directions = Array.from(headers).map(function (header) {
-                    return '';
-                });
-
-                // Transform the content of given cell in given column
-                const transform = function (index, content) {
-                    // Get the data type of column
-                    const type = headers[index].getAttribute('data-type');
-                    switch (type) {
-                        case 'number':
-                            return parseFloat(content);
-                        case 'string':
-                        default:
-                            return content;
-                    }
-                };
-
-                const sortColumn = function (index) {
-                    // Get the current direction
-                    const direction = directions[index] || 'asc';
-
-                    // A factor based on the direction
-                    const multiplier = direction === 'asc' ? 1 : -1;
-
-                    const newRows = Array.from(rows);
-
-                    newRows.sort(function (rowA, rowB) {
-                        const cellA = rowA.querySelectorAll('td.first')[index].innerHTML;
-
-                        const cellB = rowB.querySelectorAll('td.first')[index].innerHTML;
-
-
-                        const a = transform(index, cellA);
-                        const b = transform(index, cellB);
-
-                        switch (true) {
-                            case a > b:
-                                return 1 * multiplier;
-                            case a < b:
-                                return -1 * multiplier;
-                            case a === b:
-                                return 0;
-                        }
-                    });
-
-                    // Remove old rows
-                    [].forEach.call(rows, function (row) {
-                        tableBody.removeChild(row);
-                    });
-
-                    // Reverse the direction
-                    directions[index] = direction === 'asc' ? 'desc' : 'asc';
-
-                    // Append new row
-                    newRows.forEach(function (newRow) {
-                        tableBody.appendChild(newRow);
-                    });
-                };
-
-                [].forEach.call(headers, function (header, index) {
-                    header.addEventListener('click', function () {
-                        sortColumn(index);
-                    });
-                });
-            });
-        </script>
-
-        </div>
-        {% endfor %}
-        {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
-        {#        ...#}
-        {#    </div>#}
-        {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
-        {#        ...#}
-        {#    </div>#}
     </div>
 
 
 {% endblock %}
 
+{% block extra_js %}
+    <script>
+        let div_to_observe = document.getElementById('orders');
 
+        const config = {childList: true, subtree: true};
+
+        // Callback function to execute when mutations are observed
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    function reload_js(src) {
+                        $('script[src="' + src + '"]').remove();
+                        $('<script>').attr('src', src).appendTo('head');
+                    }
+
+                    reload_js('/static/js/table_expand.js');
+                    reload_js('/static/js/show_total.js');
+                } else {
+                    console.log(`cos innego się wydarzyło: ${mutation.type}`);
+                }
+            }
+        };
+        // Create an observer instance linked to the callback function
+        const observer = new MutationObserver(callback);
+        // Start observing the target node for configured mutations
+        observer.observe(div_to_observe, config);
+    </script>
+{% endblock %}
 
 {% block extra_styling %}
     <style>

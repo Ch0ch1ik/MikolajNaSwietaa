@@ -26,29 +26,8 @@ class IndexView(View):
         if user.is_superuser:
             # items = Vs1YkBaformsSubmissions.objects.all()
             # update_items(items)
-
-            orders = Order.objects.all()
-            for order in orders:
-                if type(order.order_details) == str:
-                    true = True
-                    false = False
-                    data = [json.loads(order.order_details)]
-                    quantities = [int(item) for item in json_extract(data, 'quantity')]
-                    prices = [int(item) for item in json_extract(data, 'price')]
-                    prices_quantites = dict(zip(prices, quantities))
-                    order.products = prices_quantites
-
-                elif type(order.order_details) == dict:
-                    true = True
-                    false = False
-                    data = order.order_details
-                    quantities = [int(item) for item in json_extract(data, 'quantity')]
-                    prices = [int(item) for item in json_extract(data, 'price')]
-                    prices_quantites = dict(zip(prices, quantities))
-                    order.products = prices_quantites
-                order.save()
-
-            orders = Order.objects.all().order_by('cancelled', 'accomplished')
+            visit_types = Order.objects.filter(type__startswith='Wizyta').values_list('type', flat=True).distinct()
+            orders = Order.objects.filter(type=visit_types[0]).order_by('cancelled', 'accomplished')
             total = 0
             for order in orders:
                 for k, v in order.products.items():
@@ -58,8 +37,10 @@ class IndexView(View):
                         total += int(k) * int(v)
             provinces = Order.objects.values_list('province', flat=True).distinct()
             users = User.objects.all()
+
             return render(request, 'index.html',
-                          {'orders': orders, 'total': total, 'provinces': provinces, "users": users})
+                          {'orders': orders, 'total': total, 'provinces': provinces, "users": users,
+                           'visit_types': visit_types})
         else:
             return redirect('testowy')
 
@@ -301,30 +282,10 @@ class Test(View):
     def get(self, request):
         # from ManageTool.forms import ContractEmploymentForm
         # form = ContractEmploymentForm()
-        visit_types = Order.objects.filter(type__startswith='Wizyta').values_list('type', flat=True).distinct()
-        orders = Order.objects.filter(type=visit_types[0]).order_by('cancelled', 'accomplished')
 
-
-
-        total = 0
-        for order in orders:
-            for k, v in order.products.items():
-                if order.type != 'Wizyta prywatna':
-                    total += (int(k) * int(v)) * 1.23
-                else:
-                    total += int(k) * int(v)
-        provinces = Order.objects.values_list('province', flat=True).distinct()
-        users = User.objects.all()
-
-        return render(request, 'testowy.html',
-                      {'orders': orders, 'total': total, 'provinces': provinces, "users": users, 'visit_types': visit_types})
+        return render(request, 'testowy.html')
 
     def post(self, request):
-        user = request.POST['assign']
-        id = request.POST['order_id']
-        order = Order.objects.get(id=id)
-        order.assigned_to.set(user)
-        order.save()
         return redirect('testowy')
 
 
