@@ -225,9 +225,6 @@ class UpdateOrder(UpdateView):
     success_url = "/"
 
 
-
-
-
 # write a test function to test IndexView
 # def test_index_view(self):
 #     # create a request
@@ -274,13 +271,19 @@ class UpdateOrder(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class ApplicationsView(View):
     def get(self, request):
-        items = Vs1YkBaformsSubmissions.objects.all()
+
         user = request.user
         if user.is_superuser:
-            update_items(items)
-            applications = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
+            # items = Vs1YkBaformsSubmissions.objects.all()
+            # update_items(items)
+
+            positions = Applications.objects.values_list('position', flat=True).distinct()
+            applications = Applications.objects.all().filter(position=positions[0]).order_by('denied',
+                                                                                             'appointment_made',
+                                                                                             '-created')
             regions = Applications.objects.values_list('work_region', flat=True).distinct()
-            return render(request, 'applications.html', {'applications': applications, 'regions': regions})
+            return render(request, 'applications.html',
+                          {'applications': applications, 'regions': regions, 'positions': positions})
         else:
             return redirect('testowy')
 
@@ -360,15 +363,16 @@ def show_filtered_applications(request):
     return render(request, 'tbody.html', {'applications': applications, 'regions': regions})
 
 
-
 class Test(View):
     def get(self, request):
         # from ManageTool.forms import ContractEmploymentForm
         # form = ContractEmploymentForm()
         positions = Applications.objects.values_list('position', flat=True).distinct()
-        applications = Applications.objects.all().filter(position=positions[0]).order_by('denied', 'appointment_made', '-created')
+        applications = Applications.objects.all().filter(position=positions[0]).order_by('denied', 'appointment_made',
+                                                                                         '-created')
         regions = Applications.objects.values_list('work_region', flat=True).distinct()
-        return render(request, 'testowy.html', {'applications': applications, 'regions': regions, 'positions': positions})
+        return render(request, 'testowy.html',
+                      {'applications': applications, 'regions': regions, 'positions': positions})
 
 
 class TestListView(ListView):
@@ -392,5 +396,3 @@ class TestListView(ListView):
             else:
                 queryset = queryset.filter(work_region=region)
         return queryset
-
-

@@ -6,12 +6,16 @@
     {% load extra_tags %}
     {% load static %}
 
+<p>{{ message }}</p>
+
+
+
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
                     type="button"
-                    role="tab" aria-controls="home-tab-pane" aria-selected="true">Wszystkie
-            </button>
+                    role="tab" aria-controls="home-tab-pane"
+                    aria-selected="true">Wszystkie</button>
         </li>
 
 
@@ -20,23 +24,17 @@
             <li class="nav-item" role="presentation">
                 <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab"
                         data-bs-toggle="tab"
-                        data-bs-target="#{{ region|remove_spaces }}-profile-tab-pane"
-                        type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ region }}
-                </button>
-             <input type="hidden" class="region" value="{{ region }}">
+                        data-bs-target="#home-tab-pane"
+                        type="button" role="tab" aria-controls="home-tab-pane"
+                        aria-selected="false">{{ region }}</button>
+                <input type="hidden" class="region" value="{{ region }}">
             </li>
 
         {% endfor %}
 
-        {#  <li class="nav-item" role="presentation">#}
-        {#    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>#}
-        {#  </li>#}
-        {#  <li class="nav-item" role="presentation">#}
-        {#    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>#}
-        {#  </li>#}
     </ul>
     <div style="margin-top: 10px">
-        <fieldset style="display: flex; justify-content: left ">
+        <fieldset style="display: flex; justify-content: left; align-content: space-evenly ">
             <div>
                 <input name="rok" type="checkbox" class="checkboxy" value="year">
                 <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
@@ -62,6 +60,14 @@
                 {#            <input name="score" type="checkbox" class="checkboxy" value="score">#}
                 <label for="score_over">Min punktów</label>&nbsp;&nbsp;
             </div>
+            <div>
+                <label for="stanowiska">Stanowisko</label>
+                <select id="stanowiska" onchange="show_id()">
+                    {% for position in positions %}
+                        <option value="{{ position }}">{{ position }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
         </fieldset>
     </div>
@@ -69,33 +75,50 @@
 
         <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
              tabindex="0">
-            <div id="applications">{% include 'applications_table.html' %}</div>
+            <div>{% include 'applications_table.html' %}</div>
         </div>
-        {% for region in regions %}
-            {% with applications=applications|applications_by_region:region %}
-                <div class="tab-pane fade" id="{{ region|remove_spaces }}-profile-tab-pane" role="tabpanel"
-                     aria-labelledby="profile-tab" tabindex="0">
 
-                <div id="applications">{% include 'applications_table.html' %}</div>
-            {% endwith %}
-
-
-
-        </div>
-        {% endfor %}
-        {#    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">#}
-        {#        ...#}
-        {#    </div>#}
-        {#    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">#}
-        {#        ...#}
-        {#    </div>#}
     </div>
 {% endblock %}
 
 {% block extra_js %}
-    <script type="text/javascript" src="{% static 'js/filter_apps.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/table_expand.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/sort_table.js' %}"></script>
+    <script>
+        let div_to_observe = document.getElementById('applications');
+
+        const config = {childList: true, subtree: true};
+
+        // Callback function to execute when mutations are observed
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    console.log('A child node has been added or removed.');
+
+                    function reload_js(src) {
+                        $('script[src="' + src + '"]').remove();
+                        $('<script>').attr('src', src).appendTo('head');
+                    }
+
+                    reload_js('/static/js/table_expand.js');
+                    {#reload_js('/static/js/sort_table.js');#}
+
+
+                } else {
+                    console.log(`cos innego się wydarzyło: ${mutation.type}`);
+                }
+            }
+        };
+
+        // Create an observer instance linked to the callback function
+        const observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(div_to_observe, config);
+
+        {#observer.disconnect();#}
+
+    </script>
+
+
 {% endblock %}
 
 {% block extra_styling %}
