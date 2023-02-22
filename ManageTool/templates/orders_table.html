@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
 {% load extra_tags %}
+{% load static %}
 
 
 {#-------------------------------------------------------------------------------------------------------------#}
@@ -37,210 +36,10 @@
     </tr>
     </thead>
 
-    <tbody class="first">
-    {% for order in orders %}
-        {% if not order.cancelled %}
-            {% if not order.accomplished %}
-                <tr class="first" data-target="{{ order.bounded_to }}{{ province }}">
-                    {% else %}
-                <tr class="first" style="color: gray;
-   pointer-events: none;" data-target="{{ order.bounded_to }}{{ province }}">
-            {% endif %}
-        {% else %}
-            <tr style="text-decoration: line-through; text-decoration-color: red" class="first"
-                data-target="{{ order.bounded_to }}{{ province }}">
-        {% endif %}
-
-    <td class="no-report">
-        <button type="button" class="btn btn-primary btn-table-expand" title="Szczegóły"><i
-                class="fa fa-plus"></i>·
-        </button>
-    </td>
-    <td class="first">{{ forloop.counter }}</td>
-    <td class="first">00{{ order.bounded_to }}</td>
-    <td class="text-center">{{ order.visit_length|safe }}</td>
-    <td class="first">{{ order.name_surname }}</td>
-    <td class="text-left">{{ order.facility_name }}</td>
-    <td class="text-center">{{ order.email|lower }}
-        <a href="mailto:{{ order.email }}">napisz @</a></td>
-    <td class="text-center,datetime">{{ order.visit_date }}</td>
-    <td class="first">{{ order.province }}</td>
-    <td class="first">{{ order.city }}</td>
-    <td class="text-center">{{ order.town }}</td>
-    <td class="text-center">{{ order.district }}</td>
-    <td class="first">{{ order.street }}&nbsp;{{ order.street_number }}
-        <a href="http://maps.google.com/maps?t=m&amp;q=
-                            {{ order.street }}&nbsp;{{ order.street_number }}&#44;&nbsp;{{ order.zip_code }}&nbsp;
-                                {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
-           target="_blank">Pokaż
-            na mapie</a></td>
-    <td class="text-left,string">{{ order.house_number }}</td>
-    <td>
-        {% for k, v in order.products.items %}
-            {% if k|to_float <= 120 %}<p>dojazd</p>{% else %}<p>wizyta</p>{% endif %}
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in order.products.items %}
-            {% with  k=k|to_float v=v|to_float %}
-                <p>{{ k|floatformat:2 }}</p>
-            {% endwith %}
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in order.products.items %}
-            <p>{{ v }}</p>
-        {% endfor %}
-    </td>
-    <td>
-        {% for k, v in order.products.items %}
-            {% with  k=k|to_float v=v|to_float %}
-                <p>{% widthratio v 1 k %}</p>
-            {% endwith %}
-        {% endfor %}
-    </td>
-    <td>
-        {% if order.type == 'Wizyta prywatna' %}
-            {{ order.products.items|part_sum|floatformat:2 }}
-        {% else %}
-            {{ order.products.items|part_sum|vat|floatformat:2 }}
-        {% endif %}
-    </td>
-    {% if not order.confirmed %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            {{ order.confirmed }}
-            <button onclick="return confirm('Czy na pewno chcesz potwierdzić zamówienie?');"><a
-                    style="color: black; text-decoration: none" href="confirm_order/{{ order.id }}">Potwierdź</a>
-            </button>
-        </td>
-    {% else %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            {{ order.confirmed }}
-        </td>
-    {% endif %}
-    {% if order.paid_made %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            {{ order.paid_made }}
-        </td>
-    {% else %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            {{ order.paid_made }}
-            <button onclick="return confirm('Czy na pewno chcesz potwierdzić płatność?');"><a
-                    style="color: black; text-decoration: none" href="confirm_payment/{{ order.id }}">Potwierdź</a>
-            </button>
-        </td>
-    {% endif %}
-
-
-    {% if not order.assigned_to.count == 0 %}
-        <td style="background-color: rgba(0,128,0,0.47)">
-            <form method="post">
-                {% csrf_token %}
-                <select name="assign">
-                    {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="submit" value="Przypisz">
-            </form>
-        </td>
-    {% else %}
-        <td style="background-color: rgba(96,0,0,0.34)">
-            <form method="post">
-                {% csrf_token %}
-                <select name="assign">
-                    {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.last_name }}&nbsp{{ user.first_name }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="submit" value="Przypisz">
-            </form>
-        </td>
-    {% endif %}
-    <td class="first">{{ order.created }}</td>
-
-    </tr>
-
-
-        <tr id="{{ order.bounded_to }}{{ province }}" class="second-level">
-            <td colspan="6">
-                <table class="table table-condensed table-bordered table-responsive table-hover report-table">
-                    <tbody>
-
-                    <tr>
-                        <th class="text-left,string">Nazwa firmy</th>
-                        <th class="text-left,string">NIP</th>
-                        <th class="text-center">Telefon kontaktowy</th>
-                        <th class="text-center">Email</th>
-                        <th class="text-center">Adres siedziby</th>
-                        <th class="text-center">Zgoda marketingowa</th>
-                        <th class="text-center">Przypominajka</th>
-
-
-                        {#                        <th class="text-center">Opłata dojazdowa</th>#}
-                        {#                        <th class="text-center">Nazwa placówki</th>#}
-
-                    </tr>
-                    <tr>
-                        <td class="text-left">{{ order.facility_name }}</td>
-                        <td class="text-left">{{ order.nip }}</td>
-                        <td>{{ order.phone|safe }}</td>
-                        <td class="text-center">{{ order.email|lower }}
-                            <a href="mailto:{{ order.email }}">napisz @</a></td>
-                        <td class="text-center">{{ order.facility_address }}</td>
-                        <td class="text-center">{{ order.marketing_approval }}</td>
-                        <td class="text-center">{{ order.reminder_approval }}</td>
-
-
-                        {#                        <td class="text-center">{{ order.arrival_fee }}</td>#}
-                        {#                        <td class="text-center">{{ order.facility_name }}</td>#}
-
-                    </tr>
-                    <tr>
-                        <th class="first">Typ</th>
-                        <th class="text-center">Długość wizyty</th>
-                        <th class="text-center">Data wizyty</th>
-                        <th class="text-center">Przedział godz</th>
-                        <th class="text-center">Pref. godz</th>
-                        <th class="text-center">Informacje dodatkowe</th>
-                        <th class="text-center">Kod pocztowy</th>
-                        <th class="text-center">Anuluj zamówienie</th>
-                        <th>Przypisany</th>
-                        <th>Edytuj</th>
-                        {#                        <th class="text-center">Szczegóły zamówienia</th>#}
-
-                    </tr>
-                    <tr>
-                        <td class="first">{{ order.type }}</td>
-                        <td class="text-center">{{ order.visit_length|safe }}</td>
-                        <td class="text-center,datetime">{{ order.visit_date }}</td>
-                        <td class="text-center">{{ order.visit_time }}</td>
-                        <td class="text-center">{{ order.pref_visit_time }}</td>
-                        <td class="text-center">{{ order.additional_info }}</td>
-                        <td class="text-center">{{ order.zip_code }}</td>
-                        <td>
-                            <button style="background-color: rgba(182,3,3,0.82)"
-                                    onclick="return confirm('Czy na pewno chcesz anulować zamówienie?');"><a
-                                    style="color: black; text-decoration: none;"
-                                    href="cancel_order/{{ order.id }}">Anuluj</a>
-                            </button>
-                        </td>
-                        <td>{% for x in order.assigned_to.all %}{{ x.last_name }}&nbsp
-                            {{ x.first_name }}{% endfor %}</td>
-                        <td>
-                            <a style="color: black; text-decoration: none" href="update_order/{{ order.id }}">Edytuj</a>
-                        </td>
-                        {#                        <td class="text-center">{{ order.order_details }}</td>#}
-
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    {% endfor %}
+    <tbody class="first" id="orders">
+    {% include 'orders_table_body.html' %}
     </tbody>
+
     <tfoot>
     <tr>
         <th class="no-report" title="Expandir"></th>
@@ -261,107 +60,17 @@
         <th></th>
         <th></th>
         <th>Suma:</th>
-        <th class="text-center,string">{{ total|to_float|floatformat:2 }}</th>
+        <th class="text-center,string" id="total">0</th>
     </tr>
     </tfoot>
+
 </table>
+
 
 
 {#---------------------------------------------------------------------------------------------------#}
 
 
-<script>
-    //
-    $(document).ready(function () {
-
-        //
-        $('.btn-table-expand').on('click', function () {
-            let $tr = $(this).closest('tr');
-
-            if ($(this).data('expanded') === undefined || $(this).data('expanded') === 'false') {
-                $(this).data('expanded', 'true')
-                $(this).children('i').attr('class', 'fa fa-minus');
-                $('#' + $tr.data('target')).show();
-            } else {
-                $(this).data('expanded', 'false')
-                $(this).children('i').attr('class', 'fa fa-plus');
-                $('#' + $tr.data('target')).hide();
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        const table = document.getElementById('sortMe');
-        const headers = table.querySelectorAll('th.first');
-        const tableBody = table.querySelector('tbody.first');
-        const rows = tableBody.querySelectorAll('tr.first');
-
-        // Track sort directions
-        const directions = Array.from(headers).map(function (header) {
-            return '';
-        });
-
-        // Transform the content of given cell in given column
-        const transform = function (index, content) {
-            // Get the data type of column
-            const type = headers[index].getAttribute('data-type');
-            switch (type) {
-                case 'number':
-                    return parseFloat(content);
-                case 'string':
-                default:
-                    return content;
-            }
-        };
-
-        const sortColumn = function (index) {
-            // Get the current direction
-            const direction = directions[index] || 'asc';
-
-            // A factor based on the direction
-            const multiplier = direction === 'asc' ? 1 : -1;
-
-            const newRows = Array.from(rows);
-
-            newRows.sort(function (rowA, rowB) {
-                const cellA = rowA.querySelectorAll('td.first')[index].innerHTML;
-
-                const cellB = rowB.querySelectorAll('td.first')[index].innerHTML;
-
-
-                const a = transform(index, cellA);
-                const b = transform(index, cellB);
-
-                switch (true) {
-                    case a > b:
-                        return 1 * multiplier;
-                    case a < b:
-                        return -1 * multiplier;
-                    case a === b:
-                        return 0;
-                }
-            });
-
-            // Remove old rows
-            [].forEach.call(rows, function (row) {
-                tableBody.removeChild(row);
-            });
-
-            // Reverse the direction
-            directions[index] = direction === 'asc' ? 'desc' : 'asc';
-
-            // Append new row
-            newRows.forEach(function (newRow) {
-                tableBody.appendChild(newRow);
-            });
-        };
-
-        [].forEach.call(headers, function (header, index) {
-            header.addEventListener('click', function () {
-                sortColumn(index);
-            });
-        });
-    });
-</script>
 
 
 {#------------------------------------------------------------------------------------------------#}

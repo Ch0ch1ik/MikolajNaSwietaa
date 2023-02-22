@@ -15,7 +15,10 @@ def split(value, key):
 
 @register.filter()
 def to_float(value):
-    return float(value)
+    try:
+        return float(value)
+    except ValueError:
+        return 0
 
 
 @register.filter()

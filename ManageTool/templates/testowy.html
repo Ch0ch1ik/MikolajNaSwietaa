@@ -1,15 +1,7 @@
 {% extends 'base.html' %}
-
-
+{% load extra_tags %}
+{% load static %}
 {% block content %}
-
-    {% load extra_tags %}
-    {% load static %}
-
-<p>{{ message }}</p>
-
-
-
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
@@ -18,21 +10,20 @@
                     aria-selected="true">Wszystkie</button>
         </li>
 
+        {% for province in provinces %}
 
-
-        {% for region in regions %}
             <li class="nav-item" role="presentation">
-                <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ region|remove_spaces }}-profile-tab"
+                <button style="color: rgba(0,0,0,0.62)" class="nav-link" id="{{ province }}-profile-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#home-tab-pane"
                         type="button" role="tab" aria-controls="home-tab-pane"
-                        aria-selected="false">{{ region }}</button>
-                <input type="hidden" class="region" value="{{ region }}">
+                        aria-selected="false">{{ province }}</button>
+                <input type="hidden" class="region" value="{{ province }}">
             </li>
 
         {% endfor %}
-
     </ul>
+
     <div style="margin-top: 10px">
         <fieldset style="display: flex; justify-content: left; align-content: space-evenly ">
             <div>
@@ -40,50 +31,41 @@
                 <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
             </div>
             <div>
-                <input type="checkbox" class="checkboxy" value="not_appointment_made">
-                <label for="appointment">Nie umówione</label>&nbsp;&nbsp;
+                <input name="confirmation" type="checkbox" class="checkboxy" value="not_confirmed">
+                <label for="confirmation">Nie potwierdzone</label>&nbsp;&nbsp;
             </div>
             <div>
-                <input name="work_24_12" type="checkbox" class="checkboxy" value="work_24_12">
-                <label for="work_24_12">Praca w Wigilię</label>&nbsp;&nbsp;
+                <input name="payment" type="checkbox" class="checkboxy" value="not_paid">
+                <label for="payment">Nie opłacone</label>&nbsp;&nbsp;
             </div>
             <div>
-                <input name="driver_license" type="checkbox" class="checkboxy" value="driver_license">
-                <label for="driver_license">Prawo jazdy</label>&nbsp;&nbsp;
+                <input name="santa" type="checkbox" class="checkboxy" value="santa">
+                <label for="santa">Bez mikołaja</label>&nbsp;&nbsp;
             </div>
             <div>
-                <input name="car" type="checkbox" class="checkboxy" value="car">
-                <label for="car">Auto</label>&nbsp;&nbsp;
-            </div>
-            <div>
-                <input id="score_over" name="score_over" value="0" type="number" max="9" min="0" onchange="show_id()">
-                {#            <input name="score" type="checkbox" class="checkboxy" value="score">#}
-                <label for="score_over">Min punktów</label>&nbsp;&nbsp;
-            </div>
-            <div>
-                <label for="stanowiska">Stanowisko</label>
-                <select id="stanowiska" onchange="show_id()">
-                    {% for position in positions %}
-                        <option value="{{ position }}">{{ position }}</option>
+                <label for="typ_wizyty">Typ wizyty</label>
+                <select id="typ_wizyty" onchange="show_id()">
+                    {% for visit_type in visit_types %}
+                        <option value="{{ visit_type }}">{{ visit_type }}</option>
                     {% endfor %}
                 </select>
             </div>
-
         </fieldset>
     </div>
-    <div class="tab-content" id="myTabContent">
 
+    <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
              tabindex="0">
-            <div>{% include 'applications_table.html' %}</div>
+            {% include 'orders_table.html' %}
         </div>
-
     </div>
+
+
 {% endblock %}
 
 {% block extra_js %}
     <script>
-        let div_to_observe = document.getElementById('applications');
+        let div_to_observe = document.getElementById('orders');
 
         const config = {childList: true, subtree: true};
 
@@ -91,34 +73,23 @@
         const callback = (mutationList, observer) => {
             for (const mutation of mutationList) {
                 if (mutation.type === 'childList') {
-                    console.log('A child node has been added or removed.');
-
                     function reload_js(src) {
                         $('script[src="' + src + '"]').remove();
                         $('<script>').attr('src', src).appendTo('head');
                     }
 
                     reload_js('/static/js/table_expand.js');
-                    {#reload_js('/static/js/sort_table.js');#}
-
-
+                    reload_js('/static/js/show_total.js');
                 } else {
                     console.log(`cos innego się wydarzyło: ${mutation.type}`);
                 }
             }
         };
-
         // Create an observer instance linked to the callback function
         const observer = new MutationObserver(callback);
-
         // Start observing the target node for configured mutations
         observer.observe(div_to_observe, config);
-
-        {#observer.disconnect();#}
-
     </script>
-
-
 {% endblock %}
 
 {% block extra_styling %}

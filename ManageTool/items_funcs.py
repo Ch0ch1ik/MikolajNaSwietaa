@@ -2,6 +2,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 
+from ManageTool.extract import json_extract
 from ManageTool.models import Order, Applications
 
 
@@ -180,49 +181,27 @@ def update_items(items):
                             pass
                         else:
                             pass
-
-                new_order.save()
-
-            # data = json.loads(item.message)
-            # for mess in data:
-            #     titles = []
-            #     values = []
-            #     titles.append(mess['title'])
-            #     values.append(mess['message'])
-            #     result = dict(zip(titles, values))
-            #     for key, value in result.items():
-            #         if key == 'Szczegóły zamówienia':
-            #             true = True
-            #             false = False
-            #             # print(eval(value))
-            #             products = (eval(value)['products'])
-            #             # print(products)
-            #             cos = json_extract(products, 'title')
-            #             print(cos)
-
-            # for i in data:
-            #     print(i['message'])
-            # print(data['products'])
-            # info = json_extract(data, 'products')
-            # print(info)
-            # for mess in data:
-            #     titles = []
-            #     values = []
-            #     titles.append(mess['title'])
-            #     values.append(mess['message'])
-            #     result = dict(zip(titles, values))
-            #     for key, value in result.items():
-            #         if key == 'Szczegóły zamówienia':
-            #             true = True
-            #             false = False
-            #             for i in list(eval(value)):
-            #                 if i == 'products':
-            #                     x = eval(value)[i]
-            #                     z = []
-            #                     for y in x:
-            #                         z.append(y)
-            #                         print(z)
-
-    # products = Order.objects.all()
-    # print(orders.first().products)
+                            # print('Unknown key: {}'.format(key))
+                set_product(new_order)
     return items
+
+
+def set_product(order):
+    if type(order.order_details) == str:
+        true = True
+        false = False
+        data = [json.loads(order.order_details)]
+        quantities = [int(item) for item in json_extract(data, 'quantity')]
+        prices = [int(item) for item in json_extract(data, 'price')]
+        prices_quantites = dict(zip(prices, quantities))
+        order.products = prices_quantites
+
+    elif type(order.order_details) == dict:
+        true = True
+        false = False
+        data = order.order_details
+        quantities = [int(item) for item in json_extract(data, 'quantity')]
+        prices = [int(item) for item in json_extract(data, 'price')]
+        prices_quantites = dict(zip(prices, quantities))
+        order.products = prices_quantites
+    order.save()

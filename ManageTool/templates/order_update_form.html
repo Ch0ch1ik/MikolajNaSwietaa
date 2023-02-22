@@ -1,4 +1,13 @@
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Update">
-</form>
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="{% url 'index' %}"><-</a>
+    <h1>Edycja zamówienia </h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update">
+    </form>
+    <div></div>
+
+{% endblock %}
+

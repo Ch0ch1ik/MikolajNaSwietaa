@@ -22,44 +22,10 @@ class IndexView(View):
     """Class based view for index page. It shows all orders and allows to assign them to users. """
 
     def get(self, request):
-
-        items = Vs1YkBaformsSubmissions.objects.all()
         user = request.user
         if user.is_superuser:
-            # products = Vs1YkBaformsItems.objects.all()
-            # for product in products:
-            #     # new_product, created = Product.objects.get_or_create(bounded_id=product.id)
-            #     # x = eval(product.options)
-            #     if product.options.__contains__('product'):
-            #         data = json.loads(product.options)['items']
-            #         # print(data)
-            #         # print(json_extract(data, 'title'))
-            #         arr = []
-            #         x = json_extract(data, 'title')
-            #         for item in x:
-            #             try:
-            #                 for _ in eval(item):
-            #                     arr.append(_)
-            #                     # arr.append(item.split(','))
-            #                     # # print(type(eval(item)))
-            #                     # # splitted_item = item.split(',')
-            #                     # # arr.append(splitted_item)
-            #                     # arr.append(item)
-            #             except SyntaxError:
-            #                 arr.append(item)
-            # print(arr)
-            # print(arr)
-            # print(type(x))
-            # data = json.loads(product.options)['title']
-            # print(data)
-            # data = json.loads(product.options)['title']
-            # print(data)
-            # for item in json_extract(data, 'product'):
-            #     print(item)
-            # for k, v in item:
-            #     print(k+'TO'+v)
-            # print(json_extract(data, 'title'))
-            update_items(items)
+            # items = Vs1YkBaformsSubmissions.objects.all()
+            # update_items(items)
 
             orders = Order.objects.all()
             for order in orders:
@@ -67,11 +33,8 @@ class IndexView(View):
                     true = True
                     false = False
                     data = [json.loads(order.order_details)]
-                    # print(json_extract(data, 'price'))
-                    # print(json_extract(data, 'quantity'))
                     quantities = [int(item) for item in json_extract(data, 'quantity')]
                     prices = [int(item) for item in json_extract(data, 'price')]
-                    # print(type(dict(zip(prices, quantities))))
                     prices_quantites = dict(zip(prices, quantities))
                     order.products = prices_quantites
 
@@ -95,21 +58,6 @@ class IndexView(View):
                         total += int(k) * int(v)
             provinces = Order.objects.values_list('province', flat=True).distinct()
             users = User.objects.all()
-
-            # json_extract(test, "products")
-            #     # test = json_extract(test, 'quantity')
-            #     print(test)
-            #     true = True
-            #     false = False
-            #     # test = json_extract(eval(test), '"84"')
-            #     if test.__contains__('"84":{}'):
-            #         print('Bez dowozu: '+test)
-            #     elif test.__contains__('84":{"3"'):
-            #         print('Dowóz - do 30 km - 120: '+test)
-            #     elif test.__contains__('84":{"2"'):
-            #         print('Dowóz - do 20 km - 80: '+test)
-            #     elif test.__contains__('84":{"1"'):
-            #         print('Dowóz - do 10 km - 40: '+test)
             return render(request, 'index.html',
                           {'orders': orders, 'total': total, 'provinces': provinces, "users": users})
         else:
@@ -225,49 +173,6 @@ class UpdateOrder(UpdateView):
     success_url = "/"
 
 
-# write a test function to test IndexView
-# def test_index_view(self):
-#     # create a request
-#     request = self.factory.get(reverse('index'))
-#     # get the response
-#     response = IndexView.as_view()(request)
-#     # test the response
-#     self.assertEqual(response.status_code, 200)
-#     self.assertTemplateUsed(response, 'index.html')
-#     self.assertContains(response, 'Zamówienia')
-#     self.assertNotContains(response, 'Hello World!')
-#
-#     # test the context
-#     self.assertEqual(response.context_data['orders'].count(), 3)
-#     self.assertEqual(response.context_data['total'], 3)
-#     self.assertEqual(response.context_data['provinces'].count(), 2)
-#     self.assertEqual(response.context_data['users'].count(), 2)
-#
-#     # test the queryset
-#     self.assertQuerysetEqual(response.context_data['orders'],
-#                              ['<Order: Order 1>', '<Order: Order 2>', '<Order: Order 3>'])
-#     self.assertQuerysetEqual(response.context_data['provinces'],
-#                              ['<Province: Dolnośląskie>', '<Province: Kujawsko-pomorskie>'])
-#     self.assertQuerysetEqual(response.context_data['users'], ['<User: admin>', '<User: test>'])
-#
-#     # test the html
-#     self.assertContains(response, '<h1>Zamówienia</h1>')
-#     self.assertContains(response, '<h2>Wszystkie zamówienia</h2>')
-#     self.assertContains(response, '<h2>Województwa</h2>')
-#     self.assertContains(response, '<h2>Pracownicy</h2>')
-#     self.assertContains(response, '<h3>Województwo: Dolnośląskie</h3>')
-#     self.assertContains(response, '<h3>Województwo: Kujawsko-pomorskie</h3>')
-#     self.assertContains(response, '<h3>Pracownik: admin</h3>')
-#     self.assertContains(response, '<h3>Pracownik: test</h3>')
-#     self.assertContains(response, '<td>Order 1</td>')
-#     self.assertContains(response, '<td>Order 2</td>')
-#     self.assertContains(response, '<td>Order 3</td>')
-#     self.assertContains(response, '<td>admin</td>')
-#     self.assertContains(response, '<td>test</td>')
-#     self.assertContains(response, '<td>1</td>')
-#     self.assertContains(response, '<td>2</td>')
-#     self.assertContains(response, '<td>3</td>')
-
 @method_decorator(login_required, name='dispatch')
 class ApplicationsView(View):
     def get(self, request):
@@ -340,19 +245,11 @@ def show_filtered_applications(request):
     if checkboxes is not None:
         if 'work_24_12' in checkboxes:
             applications = applications.filter(work_24_12='TAK')
-
-        # if 'score_over' in checkboxes:
-        #     # filter by score equal or greater than 'score_over' input
-        #     score_over = request.GET.getlist('score_over')
-        #     print(score_over)
-
-        # applications = applications.filter(score__gte=score_over)
         if 'not_appointment_made' in checkboxes:
             applications = applications.filter(appointment_made=False)
         if 'year' in checkboxes:
             curr_year = datetime.now().year
             applications = applications.filter(created__startswith=str(curr_year))
-
         if 'driver_license' in checkboxes:
             applications = applications.filter(driver_license='TAK')
         if 'car' in checkboxes:
@@ -360,19 +257,75 @@ def show_filtered_applications(request):
 
     applications.order_by('denied', 'appointment_made', '-created')
     regions = Applications.objects.values_list('work_region', flat=True).distinct()
-    return render(request, 'tbody.html', {'applications': applications, 'regions': regions})
+    return render(request, 'apps_table_body.html', {'applications': applications, 'regions': regions})
+
+
+def show_filtered_orders(request):
+    """Show filtered applications"""
+    checkboxes = request.GET.getlist('filter_by')
+    orders = Order.objects.filter(type__startswith="Wizyta")
+    region = request.GET.get('region')
+    type = request.GET.get('type')
+    if region is not None:
+        if region == 'Wszystkie':
+            pass
+        else:
+            orders = orders.filter(province=region)
+    if type is not None:
+        orders = orders.filter(type=type)
+    if checkboxes is not None:
+        if 'not_confirmed' in checkboxes:
+            orders = orders.filter(confirmed=False)
+        if 'year' in checkboxes:
+            curr_year = datetime.now().year
+            orders = orders.filter(created__startswith=str(curr_year))
+        if 'not_paid' in checkboxes:
+            orders = orders.filter(paid_made=False)
+        if 'santa' in checkboxes:
+            orders = orders.filter(assigned_to__isnull=True)
+    total = 0
+    for order in orders:
+        for k, v in order.products.items():
+            if order.type != 'Wizyta prywatna':
+                total += (int(k) * int(v)) * 1.23
+            else:
+                total += int(k) * int(v)
+    users = User.objects.all()
+    visit_types = Order.objects.values_list('type', flat=True).distinct()
+    orders.order_by('cancelled', 'accomplished', '-created')
+    provinces = Order.objects.values_list('province', flat=True).distinct()
+    return render(request, 'orders_table_body.html', {'orders': orders, 'provinces': provinces, 'users': users, 'visit_types': visit_types, 'total': total})
 
 
 class Test(View):
     def get(self, request):
         # from ManageTool.forms import ContractEmploymentForm
         # form = ContractEmploymentForm()
-        positions = Applications.objects.values_list('position', flat=True).distinct()
-        applications = Applications.objects.all().filter(position=positions[0]).order_by('denied', 'appointment_made',
-                                                                                         '-created')
-        regions = Applications.objects.values_list('work_region', flat=True).distinct()
+        visit_types = Order.objects.filter(type__startswith='Wizyta').values_list('type', flat=True).distinct()
+        orders = Order.objects.filter(type=visit_types[0]).order_by('cancelled', 'accomplished')
+
+
+
+        total = 0
+        for order in orders:
+            for k, v in order.products.items():
+                if order.type != 'Wizyta prywatna':
+                    total += (int(k) * int(v)) * 1.23
+                else:
+                    total += int(k) * int(v)
+        provinces = Order.objects.values_list('province', flat=True).distinct()
+        users = User.objects.all()
+
         return render(request, 'testowy.html',
-                      {'applications': applications, 'regions': regions, 'positions': positions})
+                      {'orders': orders, 'total': total, 'provinces': provinces, "users": users, 'visit_types': visit_types})
+
+    def post(self, request):
+        user = request.POST['assign']
+        id = request.POST['order_id']
+        order = Order.objects.get(id=id)
+        order.assigned_to.set(user)
+        order.save()
+        return redirect('testowy')
 
 
 class TestListView(ListView):
