@@ -44,6 +44,16 @@
             </button>
         </td>
     {% endif %}
+    {% if application.hired %}
+        <td style="background-color: rgba(0,128,0,0.47)" class="text-center, first">TAK</td>
+    {% else %}
+        <td class="text-center first" style="background-color: rgba(96,0,0,0.34)">NIE
+            <button onclick="return confirm('Czy na pewno chcesz utworzyć umowę dla {{ application.name_surname }}?');"><a
+                    style="color: black; text-decoration: none"
+                    href="{% url 'create_contract' application.id %}">Utwórz umowę</a>
+            </button>
+        </td>
+    {% endif %}
 {% endif %}
 </tr>
     <tr id="{{ application.bounded_to }}{{ region|remove_spaces }}" class="second-level">

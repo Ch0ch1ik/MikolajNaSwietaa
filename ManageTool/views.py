@@ -338,16 +338,24 @@ class ContractsListView(ListView):
         return queryset
 
 
-class CreateContractEmploymentView(CreateView):
-    model = ContractEmployment
-    form_class = ContractEmploymentForm
-    template_name = 'contract_employment_form.html'
-    success_url = "/contracts"
+class CreateContractEmploymentView(View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # context['title'] = 'Nowy umowa'
-        return context
+    def get(self, request, id):
+        application = Applications.objects.get(id=id)
+        try:
+            user = User.objects.get(username=application.email)
+        except User.DoesNotExist:
+            user = User.objects.create_user(username=application.email, email=application.email)
+            user.save()
+        form = ContractEmploymentForm(initial={'bounded_user': user})
+        form.save(commit=False)
+        return render(request, 'contract_employment_form.html', {'form': form, 'application': application})
+    # model = ContractEmployment
+    # form_class = ContractEmploymentForm
+    # template_name = 'contract_employment_form.html'
+    # success_url = "/contracts"
+
+
 
 
 class SearchView(View):
