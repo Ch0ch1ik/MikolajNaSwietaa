@@ -1,0 +1,42 @@
+<h2>Użytkownicy:</h2>
+<p id="dvContents" class="report-body">
+<table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">
+    <thead>
+    <tr>
+        <th class="first" data-type="number">#</th>
+        <th class="first">Nazwisko</th>
+        <th class="first">Imię</th>
+        <th class="first">Email</th>
+        <th class="text-left,datetime first">Data rejestracji</th>
+        <th class="text-center, datetime first">Ostatnie logowanie</th>
+        <th class="text-center first">Aktywny</th>
+    </tr>
+    </thead>
+    <tbody class="first">
+    {% for user in users %}
+        <tr class="first" data-target="{{ user.id }}">
+            <td class="first">{{ forloop.counter }}</td>
+            <td class="text-center first">{{ user.last_name }}</td>
+            <td class="first">{{ user.first_name }}</td>
+            <td class="text-center first">{{ user.email }}
+                <a href="mailto:{{ user.email }}">napisz @</a></td>
+            <td class="text-center,datetime first">{{ user.date_joined }}</td>
+            <td class="text-center,datetime first">{{ user.last_login }}</td>
+            <td class="first">{{ user.is_active }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th class="no-report" title="Expandir"></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th>x</th>
+        <th class="text-center,string">s</th>
+    </tr>
+    </tfoot>
+</table>

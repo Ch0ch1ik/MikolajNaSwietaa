@@ -14,15 +14,11 @@ function show_id(event) {
 
     // params.append("score", score);
     ids.forEach(id => params.append("filter_by", id))
-
-
     var address = '/show_filtered_orders/?' + params.toString();
 
     fetch(address)
         .then(response => response.text())
         .then(data => document.getElementById("orders").innerHTML = data);
-
-
 
 }
 
@@ -34,7 +30,6 @@ function get_type() {
 
 function get_region() {
     var region = document.getElementsByClassName("nav-link active")[0];
-
     return region.textContent;
 }
 
@@ -48,18 +43,8 @@ function get_checked_chexboxes() {
 
 $(document).ready(function () {
     var li_buttons = $('.checkboxy');
-    var nav_items = $('.nav-item');
+    var nav_items = $('.nav-tabs li.nav-item');
     nav_items.click(show_id);
     li_buttons.click(show_id);
 });
 
-// function filter_by_score() {
-//     var score = document.getElementById("score_over").value;
-//     console.log(score);
-//     var params = new URLSearchParams();
-//     params.append("score", score);
-//     var address = '/show_filtered_applications?' + params.toString();
-//     fetch(address)
-//         .then(response => response.text())
-//         .then(data => document.getElementById("applications").innerHTML = data);
-// }

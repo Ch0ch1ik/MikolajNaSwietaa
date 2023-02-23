@@ -4,16 +4,18 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import UpdateView, ListView
+from django.views.generic import UpdateView, ListView, CreateView
 
 from ManageTool.extract import json_extract
+from ManageTool.forms import ContractEmploymentForm
 
 from ManageTool.items_funcs import update_items
-from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications
+from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications, ContractEmployment
 
 
 # Create your views here.
@@ -26,8 +28,8 @@ class IndexView(View):
         if user.is_superuser:
             # items = Vs1YkBaformsSubmissions.objects.all()
             # update_items(items)
-            visit_types = Order.objects.filter(type__startswith='Wizyta').values_list('type', flat=True).distinct()
-            orders = Order.objects.filter(type=visit_types[0]).order_by('cancelled', 'accomplished')
+            visit_types = ['Wizyta firmowa', 'Wizyta przedszkolna', 'Wizyta prywatna']
+            orders = Order.objects.filter(type=visit_types[0]).defer('order_details').order_by('cancelled', 'accomplished')
             total = 0
             for order in orders:
                 for k, v in order.products.items():
@@ -35,7 +37,9 @@ class IndexView(View):
                         total += (int(k) * int(v)) * 1.23
                     else:
                         total += int(k) * int(v)
-            provinces = Order.objects.values_list('province', flat=True).distinct()
+            # provinces = Order.objects.values_list('province', flat=True).distinct()
+            # print(provinces)
+            provinces = ['mazowieckie', 'śląskie', 'pomorskie', 'dolnośląskie', 'kujawsko-pomorskie', 'lubelskie', 'lubuskie', 'łódzkie', 'małopolskie', 'opolskie', 'podkarpackie', 'podlaskie', 'warmińsko-mazurskie', 'wielkopolskie', 'zachodniopomorskie']
             users = User.objects.all()
 
             return render(request, 'index.html',
@@ -220,7 +224,6 @@ def show_filtered_applications(request):
             applications = applications.filter(work_region=region)
     if position is not None:
         applications = applications.filter(position=position)
-
     if score is not None:
         applications = applications.filter(score__gte=score)
     if checkboxes is not None:
@@ -244,7 +247,8 @@ def show_filtered_applications(request):
 def show_filtered_orders(request):
     """Show filtered applications"""
     checkboxes = request.GET.getlist('filter_by')
-    orders = Order.objects.filter(type__startswith="Wizyta")
+    visit_types = ['Wizyta firmowa', 'Wizyta przedszkolna', 'Wizyta prywatna']
+    orders = Order.objects.filter(type__in=visit_types).defer('order_details')
     region = request.GET.get('region')
     type = request.GET.get('type')
     if region is not None:
@@ -272,7 +276,6 @@ def show_filtered_orders(request):
             else:
                 total += int(k) * int(v)
     users = User.objects.all()
-    visit_types = Order.objects.values_list('type', flat=True).distinct()
     orders.order_by('cancelled', 'accomplished', '-created')
     provinces = Order.objects.values_list('province', flat=True).distinct()
     return render(request, 'orders_table_body.html', {'orders': orders, 'provinces': provinces, 'users': users, 'visit_types': visit_types, 'total': total})
@@ -310,3 +313,56 @@ class TestListView(ListView):
             else:
                 queryset = queryset.filter(work_region=region)
         return queryset
+
+
+class ContractsListView(ListView):
+    template_name = 'contracts.html'
+    model = ContractEmployment
+    context_object_name = 'contracts'
+    paginate_by = 50
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['regions'] = ContractEmployment.objects.values_list('work_region', flat=True).distinct()
+        # context['positions'] = ContractEmployment.objects.values_list('position', flat=True).distinct()
+        return context
+
+    def get_queryset(self):
+        queryset = ContractEmployment.objects.all().order_by('signature_date')
+        # region = self.request.GET.get('region')
+        # if region is not None:
+        #     if region == 'Wszystkie':
+        #         pass
+        #     else:
+        #         queryset = queryset.filter(work_region=region)
+        return queryset
+
+
+class CreateContractEmploymentView(CreateView):
+    model = ContractEmployment
+    form_class = ContractEmploymentForm
+    template_name = 'contract_employment_form.html'
+    success_url = "/contracts"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['title'] = 'Nowy umowa'
+        return context
+
+
+class SearchView(View):
+    def get(self, request):
+        data = self.request.GET['search_box']
+        search_in_applications = Applications.objects.filter(Q(name_surname__icontains=data) | Q(
+            phone__icontains=data) | Q(email__icontains=data))
+        search_in_orders = Order.objects.filter(Q(bounded_to__icontains=data) | Q(name_surname__icontains=data) | Q(
+            phone__icontains=data) | Q(email__icontains=data))
+        search_in_users = User.objects.filter(Q(first_name__icontains=data) | Q(last_name__icontains=data) | Q(
+            email__icontains=data))
+        return render(request, 'search.html', {'search_in_applications': search_in_applications, 'search_in_orders': search_in_orders, 'search_in_users': search_in_users})
+
+
+def update_all_data(request):
+    items = Vs1YkBaformsSubmissions.objects.all()
+    update_items(items)
+    return redirect('index')

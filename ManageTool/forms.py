@@ -1,5 +1,4 @@
-from django.forms import ModelForm, DateInput
-from jsignature.forms import JSignatureField
+from django.forms import ModelForm, DateInput, NumberInput
 
 from jsignature.widgets import JSignatureWidget
 
@@ -16,4 +15,6 @@ class ContractEmploymentForm(ModelForm):
         widgets = {
             'start_date': DateInput(attrs={'type': 'date'}),
             'end_date': DateInput(attrs={'type': 'date'}),
+            'signature': JSignatureWidget(attrs={'width': '100%', 'height': '200px'}),
+            'fuel_refund': NumberInput(attrs={'step': '0.01', 'min': '0.00', 'value': '0.75'})
         }

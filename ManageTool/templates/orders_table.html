@@ -1,10 +1,4 @@
 {% load extra_tags %}
-{% load static %}
-
-
-{#-------------------------------------------------------------------------------------------------------------#}
-
-
 <h2>Zamówione wizyty:</h2>
 <p id="dvContents" class="report-body">
 <table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">
@@ -35,11 +29,9 @@
         <th class="first">Data zgłoszenia</th>
     </tr>
     </thead>
-
     <tbody class="first" id="orders">
-    {% include 'orders_table_body.html' %}
+        {% include 'orders_table_body.html' %}
     </tbody>
-
     <tfoot>
     <tr>
         <th class="no-report" title="Expandir"></th>
@@ -63,19 +55,7 @@
         <th class="text-center,string" id="total">0</th>
     </tr>
     </tfoot>
-
 </table>
-
-
-
-{#---------------------------------------------------------------------------------------------------#}
-
-
-
-
-{#------------------------------------------------------------------------------------------------#}
-
-
 <style>
     body, h1, h2, h3 {
         margin: 0;

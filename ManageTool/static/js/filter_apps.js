@@ -1,7 +1,5 @@
 function show_id(event) {
 
-
-
     var ids = get_checked_chexboxes();
     var params = new URLSearchParams();
     var score = document.getElementById("score_over").value;
@@ -17,7 +15,7 @@ function show_id(event) {
     params.append("score", score);
     ids.forEach(id => params.append("filter_by", id))
 
-    var address = '/show_filtered_applications?' + params.toString();
+    var address = '/show_filtered_applications/?' + params.toString();
 
     fetch(address)
         .then(response => response.text())
@@ -47,7 +45,7 @@ function get_checked_chexboxes() {
 
 $(document).ready(function () {
     var li_buttons = $('.checkboxy');
-    var nav_items = $('.nav-item');
+    var nav_items = $('.nav-item:not(.search)');
     nav_items.click(show_id);
     li_buttons.click(show_id);
 });

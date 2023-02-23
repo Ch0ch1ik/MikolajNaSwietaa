@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% with applications=search_in_applications.all %}
+        {% include 'applications_table.html' %}
+    {% endwith %}
+    {% with orders=search_in_orders.all %}
+        {% include 'orders_table.html' %}
+    {% endwith %}
+    {% with users=search_in_users.all %}
+        {% include 'users_table.html' %}
+    {% endwith %}
+{% endblock %}

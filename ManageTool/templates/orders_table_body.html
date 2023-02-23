@@ -1,7 +1,5 @@
 {% load extra_tags %}
 {% load static %}
-
-
 {% for order in orders %}
     {% if not order.cancelled %}
         {% if not order.accomplished %}
@@ -14,7 +12,6 @@
         <tr style="text-decoration: line-through; text-decoration-color: red" class="first"
             data-target="{{ order.bounded_to }}{{ province }}">
     {% endif %}
-
 <td class="no-report">
     <button type="button" class="btn btn-primary btn-table-expand" title="Szczegóły"><i
             class="fa fa-plus"></i>·
@@ -94,8 +91,6 @@
         </button>
     </td>
 {% endif %}
-
-
 {% if not order.assigned_to.count == 0 %}
     <td style="background-color: rgba(0,128,0,0.47)">
         <p>{{ order.assigned_to.first }}</p>
@@ -126,15 +121,11 @@
     </td>
 {% endif %}
 <td class="first">{{ order.created }}</td>
-
 </tr>
-
-
     <tr id="{{ order.bounded_to }}{{ province }}" class="second-level">
         <td colspan="6">
             <table class="table table-condensed table-bordered table-responsive table-hover report-table">
                 <tbody>
-
                 <tr>
                     <th class="text-left,string">Nazwa firmy</th>
                     <th class="text-left,string">NIP</th>
@@ -143,11 +134,6 @@
                     <th class="text-center">Adres siedziby</th>
                     <th class="text-center">Zgoda marketingowa</th>
                     <th class="text-center">Przypominajka</th>
-
-
-                    {#                        <th class="text-center">Opłata dojazdowa</th>#}
-                    {#                        <th class="text-center">Nazwa placówki</th>#}
-
                 </tr>
                 <tr>
                     <td class="text-left">{{ order.facility_name }}</td>
@@ -158,11 +144,6 @@
                     <td class="text-center">{{ order.facility_address }}</td>
                     <td class="text-center">{{ order.marketing_approval }}</td>
                     <td class="text-center">{{ order.reminder_approval }}</td>
-
-
-                    {#                        <td class="text-center">{{ order.arrival_fee }}</td>#}
-                    {#                        <td class="text-center">{{ order.facility_name }}</td>#}
-
                 </tr>
                 <tr>
                     <th class="first">Typ</th>
@@ -175,9 +156,7 @@
                     <th class="text-center">Anuluj zamówienie</th>
                     <th>Przypisany</th>
                     <th>Edytuj</th>
-                    {#                        <th class="text-center">Szczegóły zamówienia</th>#}
-
-                </tr>
+                    </tr>
                 <tr>
                     <td class="first">{{ order.type }}</td>
                     <td class="text-center">{{ order.visit_length|safe }}</td>
@@ -199,15 +178,9 @@
                         <a style="color: black; text-decoration: none"
                            href="{% url 'update_view' order.id %}">Edytuj</a>
                     </td>
-                    {#                        <td class="text-center">{{ order.order_details }}</td>#}
-
-                </tr>
+                        </tr>
                 </tbody>
             </table>
         </td>
     </tr>
 {% endfor %}
-
-
-
-

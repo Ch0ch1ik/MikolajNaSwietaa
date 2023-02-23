@@ -1,13 +1,6 @@
 {% load extra_tags %}
 {% load static %}
-
-
-{#-------------------------------------------------------------------------------------------------------------#}
-
-
 <h2>Złożone aplikacje:</h2>
-
-
 <p id="dvContents" class="report-body">
 <table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">
     <thead>
@@ -34,14 +27,10 @@
         <th class="first">Data zgłoszenia</th>
         <th class="first">Punktacja</th>
         <th class="first">Umówione spotkanie</th>
-
     </tr>
     </thead>
-
     <tbody class="first" id="applications">
-    {% include 'apps_table_body.html' %}
-
-
+        {% include 'apps_table_body.html' %}
     </tbody>
     <tfoot>
     <tr>
@@ -63,113 +52,9 @@
         <th></th>
         <th></th>
         <th>XYZ</th>
-
     </tr>
     </tfoot>
 </table>
-
-
-
-
-{#<script>#}
-{#    //#}
-{#    $(document).ready(function () {#}
-{##}
-{#        //#}
-{#        $('.btn-table-expand').on('click', function () {#}
-{#            let $tr = $(this).closest('tr');#}
-{##}
-{#            if ($(this).data('expanded') === undefined || $(this).data('expanded') === 'false') {#}
-{#                $(this).data('expanded', 'true')#}
-{#                $(this).children('i').attr('class', 'fa fa-minus');#}
-{#                $('#' + $tr.data('target')).show();#}
-{#            } else {#}
-{#                $(this).data('expanded', 'false')#}
-{#                $(this).children('i').attr('class', 'fa fa-plus');#}
-{#                $('#' + $tr.data('target')).hide();#}
-{#            }#}
-{#        });#}
-{#    });#}
-{##}
-{#    document.addEventListener('DOMContentLoaded', function () {#}
-{#        const table = document.getElementById('sortMe');#}
-{#        const headers = table.querySelectorAll('th.first');#}
-{#        const tableBody = table.querySelector('tbody.first');#}
-{#        const rows = tableBody.querySelectorAll('tr.first');#}
-{##}
-{#        // Track sort directions#}
-{#        const directions = Array.from(headers).map(function (header) {#}
-{#            return '';#}
-{#        });#}
-{##}
-{#        // Transform the content of given cell in given column#}
-{#        const transform = function (index, content) {#}
-{#            // Get the data type of column#}
-{#            const type = headers[index].getAttribute('data-type');#}
-{#            switch (type) {#}
-{#                case 'number':#}
-{#                    return parseFloat(content);#}
-{#                case 'string':#}
-{#                default:#}
-{#                    return content;#}
-{#            }#}
-{#        };#}
-{##}
-{#        const sortColumn = function (index) {#}
-{#            // Get the current direction#}
-{#            const direction = directions[index] || 'asc';#}
-{##}
-{#            // A factor based on the direction#}
-{#            const multiplier = direction === 'asc' ? 1 : -1;#}
-{##}
-{#            const newRows = Array.from(rows);#}
-{##}
-{#            newRows.sort(function (rowA, rowB) {#}
-{#                const cellA = rowA.querySelectorAll('td.first')[index].innerHTML;#}
-{##}
-{#                const cellB = rowB.querySelectorAll('td.first')[index].innerHTML;#}
-{##}
-{##}
-{#                const a = transform(index, cellA);#}
-{#                const b = transform(index, cellB);#}
-{##}
-{#                switch (true) {#}
-{#                    case a > b:#}
-{#                        return 1 * multiplier;#}
-{#                    case a < b:#}
-{#                        return -1 * multiplier;#}
-{#                    case a === b:#}
-{#                        return 0;#}
-{#                }#}
-{#            });#}
-{##}
-{#            // Remove old rows#}
-{#            [].forEach.call(rows, function (row) {#}
-{#                tableBody.removeChild(row);#}
-{#            });#}
-{##}
-{#            // Reverse the direction#}
-{#            directions[index] = direction === 'asc' ? 'desc' : 'asc';#}
-{##}
-{#            // Append new row#}
-{#            newRows.forEach(function (newRow) {#}
-{#                tableBody.appendChild(newRow);#}
-{#            });#}
-{#        };#}
-{##}
-{#        [].forEach.call(headers, function (header, index) {#}
-{#            header.addEventListener('click', function () {#}
-{#                sortColumn(index);#}
-{#            });#}
-{#        });#}
-{#    });#}
-{#</script>#}
-{#<script type="text/javascript" src="{% static 'js/filter_apps.js' %}"></script>#}
-
-
-{#------------------------------------------------------------------------------------------------#}
-
-
 <style>
     body, h1, h2, h3 {
         margin: 0;
@@ -277,4 +162,3 @@
     }
 
 </style>
-
