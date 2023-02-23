@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
     {% for contract in contracts %}
-
+        {{ contract.bounded_user }}
     {% endfor %}
 {% endblock %}

@@ -29,7 +29,8 @@ class IndexView(View):
             # items = Vs1YkBaformsSubmissions.objects.all()
             # update_items(items)
             visit_types = ['Wizyta firmowa', 'Wizyta przedszkolna', 'Wizyta prywatna']
-            orders = Order.objects.filter(type=visit_types[0]).defer('order_details').order_by('cancelled', 'accomplished')
+            orders = Order.objects.filter(type=visit_types[0]).defer('order_details').order_by('cancelled',
+                                                                                               'accomplished')
             total = 0
             for order in orders:
                 for k, v in order.products.items():
@@ -39,7 +40,9 @@ class IndexView(View):
                         total += int(k) * int(v)
             # provinces = Order.objects.values_list('province', flat=True).distinct()
             # print(provinces)
-            provinces = ['mazowieckie', 'śląskie', 'pomorskie', 'dolnośląskie', 'kujawsko-pomorskie', 'lubelskie', 'lubuskie', 'łódzkie', 'małopolskie', 'opolskie', 'podkarpackie', 'podlaskie', 'warmińsko-mazurskie', 'wielkopolskie', 'zachodniopomorskie']
+            provinces = ['mazowieckie', 'śląskie', 'pomorskie', 'dolnośląskie', 'kujawsko-pomorskie', 'lubelskie',
+                         'lubuskie', 'łódzkie', 'małopolskie', 'opolskie', 'podkarpackie', 'podlaskie',
+                         'warmińsko-mazurskie', 'wielkopolskie', 'zachodniopomorskie']
             users = User.objects.all()
 
             return render(request, 'index.html',
@@ -278,7 +281,9 @@ def show_filtered_orders(request):
     users = User.objects.all()
     orders.order_by('cancelled', 'accomplished', '-created')
     provinces = Order.objects.values_list('province', flat=True).distinct()
-    return render(request, 'orders_table_body.html', {'orders': orders, 'provinces': provinces, 'users': users, 'visit_types': visit_types, 'total': total})
+    return render(request, 'orders_table_body.html',
+                  {'orders': orders, 'provinces': provinces, 'users': users, 'visit_types': visit_types,
+                   'total': total})
 
 
 class Test(View):
@@ -321,21 +326,6 @@ class ContractsListView(ListView):
     context_object_name = 'contracts'
     paginate_by = 50
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # context['regions'] = ContractEmployment.objects.values_list('work_region', flat=True).distinct()
-        # context['positions'] = ContractEmployment.objects.values_list('position', flat=True).distinct()
-        return context
-
-    def get_queryset(self):
-        queryset = ContractEmployment.objects.all().order_by('signature_date')
-        # region = self.request.GET.get('region')
-        # if region is not None:
-        #     if region == 'Wszystkie':
-        #         pass
-        #     else:
-        #         queryset = queryset.filter(work_region=region)
-        return queryset
 
 
 class CreateContractEmploymentView(View):
@@ -347,15 +337,18 @@ class CreateContractEmploymentView(View):
         except User.DoesNotExist:
             user = User.objects.create_user(username=application.email, email=application.email)
             user.save()
-        form = ContractEmploymentForm(initial={'bounded_user': user})
+        form = ContractEmploymentForm(initial={'bounded_user': user, 'email': application.email})
         form.save(commit=False)
         return render(request, 'contract_employment_form.html', {'form': form, 'application': application})
-    # model = ContractEmployment
-    # form_class = ContractEmploymentForm
-    # template_name = 'contract_employment_form.html'
-    # success_url = "/contracts"
 
-
+    def post(self, request, id):
+        form = ContractEmploymentForm(request.POST)
+        if form.is_valid():
+            contract = form.save(commit=False)
+            contract.save()
+            return redirect('contracts')
+        else:
+            return render(request, 'contract_employment_form.html', {'form': form})
 
 
 class SearchView(View):
@@ -367,7 +360,9 @@ class SearchView(View):
             phone__icontains=data) | Q(email__icontains=data))
         search_in_users = User.objects.filter(Q(first_name__icontains=data) | Q(last_name__icontains=data) | Q(
             email__icontains=data))
-        return render(request, 'search.html', {'search_in_applications': search_in_applications, 'search_in_orders': search_in_orders, 'search_in_users': search_in_users})
+        return render(request, 'search.html',
+                      {'search_in_applications': search_in_applications, 'search_in_orders': search_in_orders,
+                       'search_in_users': search_in_users})
 
 
 def update_all_data(request):

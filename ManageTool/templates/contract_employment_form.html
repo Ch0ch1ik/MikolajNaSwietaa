@@ -4,9 +4,12 @@
     <div>
         <p><b>Umowa dla:</b></p>
         <p><b>{{ application.name_surname }}</b></p>
-        {{ form.as_p }}
-        <a class="btn btn-primary" href="{% url 'applications' %}">Powrót</a>
-        <button type="submit" class="btn btn-primary">Utwórz</button>
-    <p></p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a class="btn btn-primary" href="{% url 'applications' %}">Powrót</a>
+            <button type="submit" class="btn btn-primary">Utwórz</button>
+        </form>
+        <p></p>
     </div>
 {% endblock %}
