@@ -14,16 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from ManageTool import views
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('test/', views.Test.as_view(), name='testowy'),
     path('admin/', admin.site.urls),
     path('', views.IndexView.as_view(), name='index'),
-    path('login/', views.Login.as_view(), name='login'),
-    path('logout/', views.Logout.as_view(), name='logout'),
+    # path('login/', views.Login.as_view(), name='login'),
+    # path('logout/', views.Logout.as_view(), name='logout'),
     # path('register/', views.Register.as_view(), name='register'),
     path('users/', views.Users.as_view(), name='users'),
     path('applications/', views.ApplicationsView.as_view(), name='applications'),
@@ -40,7 +41,10 @@ urlpatterns = [
     path('show_filtered_orders/', views.show_filtered_orders, name='show_filtered_orders'),
     path('contracts/', views.ContractsListView.as_view(), name='contracts'),
     path('create_contract/<int:id>', views.CreateContractEmploymentView.as_view(), name='create_contract'),
+    path('create_contract_for_user/<int:id>', views.CreateContractForUserView.as_view(), name='create_contract_by_user_id'),
+    path('edit_contract/<int:id>', views.EditContractEmploymentView.as_view(), name='edit_contract'),
+    path('contract_details/<int:pk>', views.ContractDetailsView.as_view(), name='contract_details'),
     path('search/', views.SearchView.as_view(), name='search'),
     path('update_all_data', views.update_all_data, name='update_all_data'),
-    path('test2/', views.TestListView.as_view(), name='testowy2'),
+    path('create_user/', views.CreateUserView.as_view(), name='create_user'),
 ]

@@ -5,8 +5,7 @@
         {% if not order.accomplished %}
             <tr class="first" data-target="{{ order.bounded_to }}{{ province }}">
                 {% else %}
-            <tr class="first" style="color: gray;
-   pointer-events: none;" data-target="{{ order.bounded_to }}{{ province }}">
+            <tr class="first" style="color: gray;" data-target="{{ order.bounded_to }}{{ province }}">
         {% endif %}
     {% else %}
         <tr style="text-decoration: line-through; text-decoration-color: red" class="first"
@@ -31,7 +30,7 @@
 <td class="text-center">{{ order.district }}</td>
 <td class="first">{{ order.street }}&nbsp;{{ order.street_number }}
     <a href="http://maps.google.com/maps?t=m&amp;q=
-                            {{ order.street }}&nbsp;{{ order.street_number }}&#44;&nbsp;{{ order.zip_code }}&nbsp;
+                            {{ order.street }}&nbsp;{{ order.street_number }}{% if order.house_number %}/{{ order.house_number }}{% endif %}&#44;&nbsp;{{ order.zip_code }}&nbsp;
                                 {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
        target="_blank">Pokaż
         na mapie</a></td>
@@ -93,7 +92,9 @@
 {% endif %}
 {% if not order.assigned_to.count == 0 %}
     <td style="background-color: rgba(0,128,0,0.47)">
-        <p>{{ order.assigned_to.first }}</p>
+    {% for x in order.assigned_to.all %}
+        <p>{{ x }}</p>
+    {% endfor %}
         <form method="post">
             {% csrf_token %}
             <select name="assign">

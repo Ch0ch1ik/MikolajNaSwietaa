@@ -10,6 +10,7 @@
         <th class="text-left,datetime first">Data rejestracji</th>
         <th class="text-center, datetime first">Ostatnie logowanie</th>
         <th class="text-center first">Aktywny</th>
+        <th>Utwórz umowę</th>
     </tr>
     </thead>
     <tbody class="first">
@@ -23,6 +24,7 @@
             <td class="text-center,datetime first">{{ user.date_joined }}</td>
             <td class="text-center,datetime first">{{ user.last_login }}</td>
             <td class="first">{{ user.is_active }}</td>
+            <td><a class="btn btn-primary" href="{% url 'create_contract_by_user_id' user.id %}">Utwórz umowę</a></td>
         </tr>
     {% endfor %}
     </tbody>

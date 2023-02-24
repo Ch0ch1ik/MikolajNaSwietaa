@@ -1,6 +1,73 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% for contract in contracts %}
-        {{ contract.bounded_user }}
-    {% endfor %}
+    {#    {% load jsignature_filters %}#}
+    <h1>Lista umów:</h1>
+    <table class="table table-striped table-hover table-responsive table-condensed report-table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Konto:</th>
+            <th>Imię i Nazwisko</th>
+            <th>Utworzona:</th>
+            <th>Ostatnia edycja:</th>
+            <th>Podpisana przez zleceniobiorcę:</th>
+            <th>Podpisana przez zleceniodawcę:</th>
+            {% if user.is_superuser %}
+                <th>Podpisz/Edytuj</th>
+            {% else %}
+                <th>Podpisz/Podgląd</th>
+            {% endif %}
+        </tr>
+        </thead>
+        {% for contract in contracts %}
+
+            {#            <tr><td><img src="{{ contract.signature|signature_base64 }}"/></td></tr>#}
+            <tr>
+                <td>{{ contract.id }}</td>
+                <td>{{ contract.bounded_user }}</td>
+                <td>{{ contract.bounded_user.first_name }} {{ contract.bounded_user.last_name }}</td>
+                <td>{{ contract.created }}</td>
+                <td>{{ contract.last_edit }}</td>
+                {% if user.is_superuser %}
+                    {% if contract.signature %}
+                        <td style="color: green">TAK</td>
+                        {% if contract.signed_by_employer %}
+                            <td style="color: green">TAK</td>
+                        {% else %}
+                            <td style="color: red">NIE</td>
+                        {% endif %}
+                        <td><a href="{% url 'edit_contract' contract.id %}">Podpisz/Edytuj</a></td>
+                    {% else %}
+                        <td style="color: red">NIE</td>
+                        {% if contract.signed_by_employer %}
+                            <td style="color: green">TAK</td>
+                        {% else %}
+                            <td style="color: red">NIE</td>
+                        {% endif %}
+                        <td><a href="{% url 'edit_contract' contract.id %}">Podpisz/Edytuj</a></td>
+                    {% endif %}
+                {% else %}
+                    {% if contract.signature %}
+                        <td style="color: green">TAK</td>
+                        {% if contract.signed_by_employer %}
+                            <td style="color: green">TAK</td>
+                        {% else %}
+                            <td style="color: red">NIE</td>
+                        {% endif %}
+                        <td><a href="{% url 'contract_details' contract.id %}">Podgląd</a></td>
+                    {% else %}
+                        <td style="color: red">NIE</td>
+                        {% if contract.signed_by_employer %}
+                            <td style="color: green">TAK</td>
+                        {% else %}
+                            <td style="color: red">NIE</td>
+                        {% endif %}
+                        <td><a href="{% url 'edit_contract' contract.id %}">Wypełnij i podpisz</a></td>
+                    {% endif %}
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+    </table>
+
 {% endblock %}

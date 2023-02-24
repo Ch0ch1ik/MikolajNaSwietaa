@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import UpdateView, ListView, CreateView
+from django.views.generic import UpdateView, ListView, CreateView, DetailView
 
 from ManageTool.extract import json_extract
 from ManageTool.forms import ContractEmploymentForm
@@ -19,7 +19,7 @@ from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications, Cont
 
 
 # Create your views here.
-@method_decorator(login_required(login_url='/login'), name='dispatch')
+@method_decorator(login_required(login_url='accounts/login'), name='dispatch')
 class IndexView(View):
     """Class based view for index page. It shows all orders and allows to assign them to users. """
 
@@ -29,8 +29,8 @@ class IndexView(View):
             # items = Vs1YkBaformsSubmissions.objects.all()
             # update_items(items)
             visit_types = ['Wizyta firmowa', 'Wizyta przedszkolna', 'Wizyta prywatna']
-            orders = Order.objects.filter(type=visit_types[0]).defer('order_details').order_by('cancelled',
-                                                                                               'accomplished')
+            orders = Order.objects.filter(type__in=visit_types).defer('order_details').order_by('cancelled',
+                                                                                                'accomplished')
             total = 0
             for order in orders:
                 for k, v in order.products.items():
@@ -44,63 +44,72 @@ class IndexView(View):
                          'lubuskie', 'łódzkie', 'małopolskie', 'opolskie', 'podkarpackie', 'podlaskie',
                          'warmińsko-mazurskie', 'wielkopolskie', 'zachodniopomorskie']
             users = User.objects.all()
+            # user list with contracts bounden to them
+            santas = users.filter(order__assigned_to__isnull=False).distinct()
+            users = users.filter(bounded_user__isnull=False).distinct()
+
+            # show users with contracts bounden to them
 
             return render(request, 'index.html',
                           {'orders': orders, 'total': total, 'provinces': provinces, "users": users,
-                           'visit_types': visit_types})
+                           'visit_types': visit_types, 'santas': santas})
         else:
-            return redirect('testowy')
+            orders = Order.objects.filter(assigned_to=user).order_by('cancelled', 'accomplished')
+            contracts = ContractEmployment.objects.filter(bounded_user=user)
+            return render(request, 'user_main.html', {'orders': orders, 'contracts': contracts})
 
     def post(self, request):
-        user = request.POST['assign']
+        user_id = int(request.POST['assign'])
+        print(user_id)
         id = request.POST['order_id']
         order = Order.objects.get(id=id)
-        order.assigned_to.set(user)
+        order.assigned_to.clear()
+        order.assigned_to.add(user_id)
         order.save()
         return redirect('index')
 
 
-class Login(View):
-    def get(self, request):
-        return render(request, 'login.html')
-
-    def post(self, request):
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(username=email, password=password)
-        if user is not None:
-            login(request, user)
-            if user.is_superuser:
-                return redirect('index')
-            else:
-                return redirect('testowy')
-        else:
-            return redirect('register')
-
-
-class Register(View):
-    def get(self, request):
-        return render(request, 'register.html')
-
-    def post(self, request):
-        first_name = request.POST['name']
-        last_name = request.POST['surname']
-        email = request.POST['email']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-        if password == password2 and first_name and last_name and email and password:
-            User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
-                                     password=password)
-            return redirect('login')
-        else:
-            msg = 'Niepoprawne dane'
-            return render(request, 'register.html', {'msg': msg})
-
-
-class Logout(View):
-    def get(self, request):
-        logout(request)
-        return redirect('index')
+# class Login(View):
+#     def get(self, request):
+#         return render(request, 'registration/login.html')
+#
+#     def post(self, request):
+#         email = request.POST['email']
+#         password = request.POST['password']
+#         user = authenticate(username=email, password=password)
+#         if user is not None:
+#             login(request, user)
+#             if user.is_superuser:
+#                 return redirect('index')
+#             else:
+#                 return redirect('testowy')
+#         else:
+#             return redirect('register')
+#
+#
+# class Register(View):
+#     def get(self, request):
+#         return render(request, 'registration/register.html')
+#
+#     def post(self, request):
+#         first_name = request.POST['name']
+#         last_name = request.POST['surname']
+#         email = request.POST['email']
+#         password = request.POST['password']
+#         password2 = request.POST['password2']
+#         if password == password2 and first_name and last_name and email and password:
+#             User.objects.create_user(username=email, email=email, first_name=first_name, last_name=last_name,
+#                                      password=password)
+#             return redirect('login')
+#         else:
+#             msg = 'Niepoprawne dane'
+#             return render(request, 'registration/register.html', {'msg': msg})
+#
+#
+# class Logout(View):
+#     def get(self, request):
+#         logout(request)
+#         return redirect('index')
 
 
 class Users(View):
@@ -254,13 +263,16 @@ def show_filtered_orders(request):
     orders = Order.objects.filter(type__in=visit_types).defer('order_details')
     region = request.GET.get('region')
     type = request.GET.get('type')
+    bounded_santa = request.GET.get('bounded_santa')
     if region is not None:
         if region == 'Wszystkie':
             pass
         else:
             orders = orders.filter(province=region)
-    if type is not None:
+    if type is not None and type != '':
         orders = orders.filter(type=type)
+    if bounded_santa is not None and bounded_santa != '':
+        orders = orders.filter(assigned_to=bounded_santa)
     if checkboxes is not None:
         if 'not_confirmed' in checkboxes:
             orders = orders.filter(confirmed=False)
@@ -279,11 +291,13 @@ def show_filtered_orders(request):
             else:
                 total += int(k) * int(v)
     users = User.objects.all()
+    santas = users.filter(order__assigned_to__isnull=False).distinct()
+    users = users.filter(bounded_user__isnull=False).distinct()
     orders.order_by('cancelled', 'accomplished', '-created')
     provinces = Order.objects.values_list('province', flat=True).distinct()
     return render(request, 'orders_table_body.html',
                   {'orders': orders, 'provinces': provinces, 'users': users, 'visit_types': visit_types,
-                   'total': total})
+                   'total': total, 'san': santas})
 
 
 class Test(View):
@@ -297,34 +311,14 @@ class Test(View):
         return redirect('testowy')
 
 
-class TestListView(ListView):
-    template_name = 'testowy.html'
-    model = Applications
-    context_object_name = 'applications'
-    paginate_by = 50
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['regions'] = Applications.objects.values_list('work_region', flat=True).distinct()
-        context['positions'] = Applications.objects.values_list('position', flat=True).distinct()
-        return context
-
-    def get_queryset(self):
-        queryset = Applications.objects.all().order_by('denied', 'appointment_made', '-created')
-        region = self.request.GET.get('region')
-        if region is not None:
-            if region == 'Wszystkie':
-                pass
-            else:
-                queryset = queryset.filter(work_region=region)
-        return queryset
-
-
-class ContractsListView(ListView):
-    template_name = 'contracts.html'
-    model = ContractEmployment
-    context_object_name = 'contracts'
-    paginate_by = 50
+class ContractsListView(View):
+    def get(self, request):
+        user = request.user
+        if user.is_superuser:
+            contracts = ContractEmployment.objects.all()
+        else:
+            contracts = ContractEmployment.objects.filter(bounded_user=user)
+        return render(request, 'contracts.html', {'contracts': contracts})
 
 
 
@@ -336,17 +330,21 @@ class CreateContractEmploymentView(View):
             user = User.objects.get(username=application.email)
         except User.DoesNotExist:
             user = User.objects.create_user(username=application.email, email=application.email)
+            user.password = f'User{application.id}password'
             user.save()
-        form = ContractEmploymentForm(initial={'bounded_user': user, 'email': application.email})
+        form = ContractEmploymentForm(initial={'bounded_user': user, 'email': user.email})
         form.save(commit=False)
         return render(request, 'contract_employment_form.html', {'form': form, 'application': application})
 
     def post(self, request, id):
         form = ContractEmploymentForm(request.POST)
+        application = Applications.objects.get(id=id)
         if form.is_valid():
             contract = form.save(commit=False)
             contract.save()
-            return redirect('contracts')
+            application.hired = True
+            application.save()
+            return redirect('applications')
         else:
             return render(request, 'contract_employment_form.html', {'form': form})
 
@@ -369,3 +367,46 @@ def update_all_data(request):
     items = Vs1YkBaformsSubmissions.objects.all()
     update_items(items)
     return redirect('index')
+
+
+class ContractDetailsView(DetailView):
+    template_name = 'contract_details.html'
+    model = ContractEmployment
+    context_object_name = 'contract'
+
+
+class EditContractEmploymentView(View):
+    def get(self, request, id):
+        contract = ContractEmployment.objects.get(id=id)
+        form = ContractEmploymentForm(instance=contract)
+        return render(request, 'contract_employment_form.html', {'form': form, 'contract': contract})
+
+    def post(self, request, id):
+        contract = ContractEmployment.objects.get(id=id)
+        form = ContractEmploymentForm(request.POST, instance=contract)
+        if form.is_valid():
+            form.save()
+            return redirect('contracts')
+        else:
+            return render(request, 'contract_employment_form.html', {'form': form, 'contract': contract})
+
+
+class CreateUserView(View):
+    pass
+
+
+class CreateContractForUserView(View):
+    def get(self, request, id):
+        user = User.objects.get(id=id)
+        form = ContractEmploymentForm(initial={'bounded_user': user, 'email': user.email})
+        form.save(commit=False)
+        return render(request, 'contract_employment_form.html', {'form': form, 'user': user})
+
+    def post(self, request, id):
+        form = ContractEmploymentForm(request.POST)
+        if form.is_valid():
+            contract = form.save(commit=False)
+            contract.save()
+            return redirect('users')
+        else:
+            return render(request, 'contract_employment_form.html', {'form': form})

@@ -8,9 +8,11 @@ function show_id(event) {
 
     var region = get_region();
     var type = get_type();
+    var santa = get_santa();
 
     params.append("region", region);
     params.append("type", type);
+    params.append("bounded_santa", santa);
 
     // params.append("score", score);
     ids.forEach(id => params.append("filter_by", id))
@@ -24,8 +26,11 @@ function show_id(event) {
 
 function get_type() {
     var position = document.getElementById("typ_wizyty");
-
     return position.value;
+}
+function get_santa() {
+    var santa = document.getElementById("bounded_santa");
+    return santa.value;
 }
 
 function get_region() {

@@ -28,7 +28,7 @@
     </ul>
 
     <div style="margin-top: 10px">
-        <fieldset style="display: flex; justify-content: left; align-content: space-evenly ">
+        <fieldset style="display: flex;">
             <div>
                 <input name="rok" type="checkbox" class="checkboxy" value="year">
                 <label for="rok">{% now 'Y' %}</label>&nbsp;&nbsp;
@@ -48,10 +48,20 @@
             <div>
                 <label for="typ_wizyty">Typ wizyty</label>
                 <select id="typ_wizyty" onchange="show_id()">
+                    <option value="">------</option>
                     {% for visit_type in visit_types %}
                         <option value="{{ visit_type }}">{{ visit_type }}</option>
                     {% endfor %}
-                </select>
+                </select>&nbsp;&nbsp;
+            </div>
+            <div>
+                <label for="bounded_santa">Mikołaj</label>
+                <select id="bounded_santa" onchange="show_id()">
+                        <option value="">------</option>
+                    {% for santa in santas %}
+                        <option value="{{ santa.id }}">{{ santa.first_name }}{{ santa.last_name }}</option>
+                    {% endfor %}
+                </select>&nbsp;&nbsp;
             </div>
         </fieldset>
     </div>

@@ -106,8 +106,7 @@ class ContractEmployment(models.Model):
     bounded_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Pracownik',
                                      related_name='bounded_user')
     type = models.CharField(max_length=255, choices=CONTRACT_TYPE, verbose_name='Typ umowy', blank=True, null=True)
-    signature_date = models.DateField(auto_created=True, auto_now_add=True, verbose_name='Data podpisania',
-                                      blank=True, null=True)
+    created = models.DateField(auto_now_add=True, verbose_name='Utowrzono')
     name_surname = models.CharField(max_length=255, verbose_name='Imię i nazwisko', blank=True, null=True)
     street = models.CharField(max_length=255, verbose_name='Ulica', blank=True, null=True)
     street_number = models.CharField(max_length=20, verbose_name='Numer domu', blank=True, null=True)
@@ -138,5 +137,7 @@ class ContractEmployment(models.Model):
     visit_rate_company_car_private_20min = models.FloatField(default=65, verbose_name='Stawka za wizytę w prywatnych domach - 20min (samochód pracodawcy)')
     visit_rate_company_car_private_30min = models.FloatField(default=85, verbose_name='Stawka za wizytę w prywatnych domach - 30min (samochód pracodawcy)')
     visit_rate_company_car_private_60min = models.FloatField(default=115, verbose_name='Stawka za wizytę w prywatnych domach - 60min (samochód pracodawcy)')
+    last_edit = models.DateTimeField(auto_now=True, verbose_name='Ostatnia edycja')
+    signed_by_employer = models.BooleanField(default=False, verbose_name='Umowa podpisana przez pracodawcę')
 
 

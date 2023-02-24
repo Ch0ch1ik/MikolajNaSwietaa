@@ -20,6 +20,7 @@
 <nav class="navbar navbar-expand-lg" style="background-color: rgba(139, 195, 74, 0.60); margin-bottom: 20px">
     <div class="container-fluid">
         <ul class="navbar-nav" style="flex: auto; justify-content: flex-end; justify-content: space-evenly">
+        {% if user.is_superuser %}
             <li class="nav-item">
                 <a style="color: black" class="nav-link" href="{% url 'update_all_data' %}">&#8635;</a>
             </li>
@@ -47,6 +48,20 @@
                 <a style="color: black" class="nav-link" href="{% url 'logout' %}">Wyloguj</a>
             </li>
         </ul>
+    {% else %}
+            <li class="nav-item">
+                <a style="color: black" class="nav-link" href="{% url 'index' %}">Moje Wizyty</a>
+            </li>
+            <li class="nav-item">
+                <a style="color: black" class="nav-link" href="{% url 'contracts' %}">Moje umowy</a>
+            </li>
+            <li class="nav-item">
+                <a style="color: black" class="nav-link" href="">Konto</a>
+            </li>
+            <li class="nav-item">
+                <a style="color: black" class="nav-link" href="{% url 'logout' %}">Wyloguj</a>
+            </li>
+    {% endif %}
     </div>
 </nav>
 

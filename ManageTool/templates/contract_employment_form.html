@@ -7,8 +7,8 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <a class="btn btn-primary" href="{% url 'applications' %}">Powrót</a>
-            <button type="submit" class="btn btn-primary">Utwórz</button>
+            <a class="btn btn-primary" href="{{request.META.HTTP_REFERER}}">Powrót</a>
+            <button type="submit" class="btn btn-primary">Zapisz</button>
         </form>
         <p></p>
     </div>

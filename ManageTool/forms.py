@@ -12,6 +12,7 @@ class ContractEmploymentForm(ModelForm):
     class Meta:
         model = ContractEmployment
         fields = '__all__'
+        exclude = ['created']
 
         widgets = {
             'start_date': DateInput(attrs={'type': 'date'}),
