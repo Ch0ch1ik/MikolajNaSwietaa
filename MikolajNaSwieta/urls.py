@@ -43,6 +43,7 @@ urlpatterns = [
     path('create_contract/<int:id>', views.CreateContractEmploymentView.as_view(), name='create_contract'),
     path('create_contract_for_user/<int:id>', views.CreateContractForUserView.as_view(), name='create_contract_by_user_id'),
     path('edit_contract/<int:id>', views.EditContractEmploymentView.as_view(), name='edit_contract'),
+    path('sign_contract/<int:id>', views.SignContractView.as_view(), name='sign_contract'),
     path('contract_details/<int:pk>', views.ContractDetailsView.as_view(), name='contract_details'),
     path('search/', views.SearchView.as_view(), name='search'),
     path('update_all_data', views.update_all_data, name='update_all_data'),

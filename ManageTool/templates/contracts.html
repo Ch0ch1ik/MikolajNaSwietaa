@@ -62,7 +62,7 @@
                         {% else %}
                             <td style="color: red">NIE</td>
                         {% endif %}
-                        <td><a href="{% url 'edit_contract' contract.id %}">Wypełnij i podpisz</a></td>
+                        <td><a href="{% url 'sign_contract' contract.id %}">Wypełnij i podpisz</a></td>
                     {% endif %}
                 {% endif %}
 

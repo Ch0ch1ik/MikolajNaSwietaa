@@ -2,6 +2,14 @@
 
 {% block content %}
     {% load extra_tags %}
+
+    <div class="alert alert-primary" role="alert">
+        {{ message }}
+    </div>
+
+
+
+
     <h2>Moje wizyty:</h2>
     <p id="dvContents" class="report-body">
     <table class="table table-striped table-hover table-responsive table-condensed report-table" id="sortMe">
@@ -45,7 +53,10 @@
             <td class="text-center">{{ order.district }}</td>
             <td class="first">{{ order.street }}&nbsp;{{ order.street_number }}{% if order.house_number %}/
                 {{ order.house_number }}{% endif %}
-                <a href="http://maps.google.com/maps?t=m&amp;q={{ order.street }}&nbsp;{{ order.street_number }}{% if order.house_number %}/{{ order.house_number }}{% endif %}&#44;&nbsp;{{ order.zip_code }}&nbsp;{% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
+                <a href="http://maps.google.com/maps?t=m&amp;q={{ order.street }}&nbsp;
+
+                        {{ order.street_number }}{% if order.house_number %}/{{ order.house_number }}{% endif %}&#44;&nbsp;{{ order.zip_code }}&nbsp;
+                        {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
                    target="_blank">Pokaż
                     na mapie</a></td>
             <td class="text-center">{{ order.pref_visit_time }}</td>
@@ -54,7 +65,10 @@
                 <td style="color: green" class="text-center">Zrealizowana</td>
             {% else %}
                 <td style="color: red; size: auto" class="text-center">Nie zrealizowana
-                    <a onclick="return confirm('Czy na pewno chcesz potwierdzić realizację wizyty dla adresu: {{ order.street }}{{ order.street_number }}?');" style="font-size: 12px" class="btn btn-primary" href="{% url 'confirm_accomplished' order.id %}">Oznacz jako zrealizowana</a>
+                    <a onclick="return confirm('Czy na pewno chcesz potwierdzić realizację wizyty dla adresu:
+                            {{ order.street }}{{ order.street_number }}?');" style="font-size: 12px"
+                       class="btn btn-primary" href="{% url 'confirm_accomplished' order.id %}">Oznacz jako
+                        zrealizowana</a>
                 </td>
             {% endif %}
 

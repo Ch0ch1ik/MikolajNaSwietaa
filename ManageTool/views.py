@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import UpdateView, ListView, CreateView, DetailView
+from jsignature.forms import JSignatureField
 
 from ManageTool.extract import json_extract
 from ManageTool.forms import ContractEmploymentForm
@@ -56,11 +57,14 @@ class IndexView(View):
         else:
             orders = Order.objects.filter(assigned_to=user).order_by('cancelled', 'accomplished')
             contracts = ContractEmployment.objects.filter(bounded_user=user)
-            return render(request, 'user_main.html', {'orders': orders, 'contracts': contracts})
+            # check if user has any contract without signature
+            for contract in contracts:
+                if contract.signature is None:
+                    message = f'Masz niepodpisaną umowę nr {contract.id} . Proszę o uzupełnienie danych i podpis.'
+            return render(request, 'user_main.html', {'orders': orders, 'contracts': contracts, 'message': message})
 
     def post(self, request):
         user_id = int(request.POST['assign'])
-        print(user_id)
         id = request.POST['order_id']
         order = Order.objects.get(id=id)
         order.assigned_to.clear()
@@ -391,6 +395,8 @@ class EditContractEmploymentView(View):
             return render(request, 'contract_employment_form.html', {'form': form, 'contract': contract})
 
 
+
+
 class CreateUserView(View):
     pass
 
@@ -410,3 +416,14 @@ class CreateContractForUserView(View):
             return redirect('users')
         else:
             return render(request, 'contract_employment_form.html', {'form': form})
+
+
+class SignContractView(View):
+    def get(self, request, id):
+        user = request.user
+        if user.is_authenticated:
+            contract = ContractEmployment.objects.get(id=id)
+            signature = JSignatureField().widget.render('signature', None)
+            return render(request, 'sign_contract.html', {'contract': contract, 'signature': signature})
+        else:
+            return redirect('login')
