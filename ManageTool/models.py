@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.validators import MinLengthValidator, MaxLengthValidator, validate_email
 from django.db import models
 from django.forms import DateInput
 from jsignature.fields import JSignatureField
@@ -107,6 +108,7 @@ class ContractEmployment(models.Model):
                                      related_name='bounded_user')
     type = models.CharField(max_length=255, choices=CONTRACT_TYPE, verbose_name='Typ umowy', blank=True, null=True)
     created = models.DateField(auto_now_add=True, verbose_name='Utowrzono')
+    concluded_date = models.DateField(verbose_name='Data zawarcia umowy', blank=True, null=True)
     name_surname = models.CharField(max_length=255, verbose_name='Imię i nazwisko', blank=True, null=True)
     street = models.CharField(max_length=255, verbose_name='Ulica', blank=True, null=True)
     street_number = models.CharField(max_length=20, verbose_name='Numer domu', blank=True, null=True)
@@ -114,30 +116,44 @@ class ContractEmployment(models.Model):
     zip_code = models.CharField(max_length=20, verbose_name='Kod pocztowy', blank=True, null=True)
     town = models.CharField(max_length=255, blank=True, verbose_name='Miejscowość', null=True)
     id_number = models.CharField(max_length=255, verbose_name='Numer dowodu osobistego', blank=True, null=True)
-    pesel = models.CharField(max_length=255, verbose_name='PESEL', blank=True, null=True)
+    pesel = models.CharField(max_length=255, verbose_name='PESEL', blank=True, null=True, unique=True,
+                             validators=[MinLengthValidator(11), MaxLengthValidator(11)])
     start_date = models.DateField(blank=True, null=True, verbose_name='Data rozpoczęcia pracy')
     end_date = models.DateField(blank=True, null=True, verbose_name='Data zakończenia pracy')
-    transport_form = models.CharField(max_length=255, choices=TRANSPORT_TYPE, verbose_name='Forma transportu', blank=True, null=True)
+    transport_form = models.CharField(max_length=255, choices=TRANSPORT_TYPE, verbose_name='Forma transportu',
+                                      blank=True, null=True)
     fuel_refund = models.FloatField(default=0.75, help_text='zł/km',
                                     verbose_name='Zwrot kosztów paliwa')
-    account_number = models.CharField(max_length=255, verbose_name='Numer konta bankowego', blank=True, null=True)
+    account_number = models.CharField(max_length=255, verbose_name='Numer konta bankowego', blank=True, null=True,
+                                      unique=True, validators=[MinLengthValidator(26), MaxLengthValidator(26)])
     phone = models.CharField(max_length=255, verbose_name='Numer telefonu', blank=True, null=True)
-    email = models.EmailField(max_length=255, verbose_name='Adres e-mail')
+    email = models.EmailField(max_length=255, verbose_name='Adres e-mail', validators=[validate_email])
     signature = JSignatureField(verbose_name='Podpis pracownika', blank=True, null=True)
-    employer = models.CharField(max_length=255, choices=EMPLOYER, verbose_name='Nazwa zamawiającego', default='0', blank=True, null=True)
-    hourly_rate_own_car = models.FloatField(default=106, help_text='zł brutto', verbose_name='Stawka godzinowa (własny samochód)')
-    hourly_rate_company_car = models.FloatField(default=85, help_text='zł brutto', verbose_name='Stawka godzinowa (samochód pracodawcy)')
-    visit_rate_own_car_firm = models.FloatField(default=100, verbose_name='Stawka za wizytę w firmach (własny samochód)')
-    visit_rate_own_car_private_10min = models.FloatField(default=60, verbose_name='Stawka za wizytę w prywatnych domach - 10min (własny samochód)')
-    visit_rate_own_car_private_20min = models.FloatField(default=80, verbose_name='Stawka za wizytę w prywatnych domach - 20min (własny samochód)')
-    visit_rate_own_car_private_30min = models.FloatField(default=100, verbose_name='Stawka za wizytę w prywatnych domach - 30min (własny samochód)')
-    visit_rate_own_car_private_60min = models.FloatField(default=130, verbose_name='Stawka za wizytę w prywatnych domach - 60min (własny samochód)')
-    visit_rate_company_car_firm = models.FloatField(default=85, verbose_name='Stawka za wizytę w firmach (samochód pracoawcy)')
-    visit_rate_company_car_private_10min = models.FloatField(default=45, verbose_name='Stawka za wizytę w prywatnych domach - 10min (samochód pracodawcy)')
-    visit_rate_company_car_private_20min = models.FloatField(default=65, verbose_name='Stawka za wizytę w prywatnych domach - 20min (samochód pracodawcy)')
-    visit_rate_company_car_private_30min = models.FloatField(default=85, verbose_name='Stawka za wizytę w prywatnych domach - 30min (samochód pracodawcy)')
-    visit_rate_company_car_private_60min = models.FloatField(default=115, verbose_name='Stawka za wizytę w prywatnych domach - 60min (samochód pracodawcy)')
+    employer = models.CharField(max_length=255, choices=EMPLOYER, verbose_name='Nazwa zamawiającego', default='0',
+                                blank=True, null=True)
+    hourly_rate_own_car = models.FloatField(default=106, help_text='zł brutto',
+                                            verbose_name='Stawka godzinowa (własny samochód)')
+    hourly_rate_company_car = models.FloatField(default=85, help_text='zł brutto',
+                                                verbose_name='Stawka godzinowa (samochód pracodawcy)')
+    visit_rate_own_car_firm = models.FloatField(default=100,
+                                                verbose_name='Stawka za wizytę w firmach (własny samochód)')
+    visit_rate_own_car_private_10min = models.FloatField(default=60,
+                                                         verbose_name='Stawka za wizytę w prywatnych domach - 10min (własny samochód)')
+    visit_rate_own_car_private_20min = models.FloatField(default=80,
+                                                         verbose_name='Stawka za wizytę w prywatnych domach - 20min (własny samochód)')
+    visit_rate_own_car_private_30min = models.FloatField(default=100,
+                                                         verbose_name='Stawka za wizytę w prywatnych domach - 30min (własny samochód)')
+    visit_rate_own_car_private_60min = models.FloatField(default=130,
+                                                         verbose_name='Stawka za wizytę w prywatnych domach - 60min (własny samochód)')
+    visit_rate_company_car_firm = models.FloatField(default=85,
+                                                    verbose_name='Stawka za wizytę w firmach (samochód pracoawcy)')
+    visit_rate_company_car_private_10min = models.FloatField(default=45,
+                                                             verbose_name='Stawka za wizytę w prywatnych domach - 10min (samochód pracodawcy)')
+    visit_rate_company_car_private_20min = models.FloatField(default=65,
+                                                             verbose_name='Stawka za wizytę w prywatnych domach - 20min (samochód pracodawcy)')
+    visit_rate_company_car_private_30min = models.FloatField(default=85,
+                                                             verbose_name='Stawka za wizytę w prywatnych domach - 30min (samochód pracodawcy)')
+    visit_rate_company_car_private_60min = models.FloatField(default=115,
+                                                             verbose_name='Stawka za wizytę w prywatnych domach - 60min (samochód pracodawcy)')
     last_edit = models.DateTimeField(auto_now=True, verbose_name='Ostatnia edycja')
     signed_by_employer = models.BooleanField(default=False, verbose_name='Umowa podpisana przez pracodawcę')
-
-

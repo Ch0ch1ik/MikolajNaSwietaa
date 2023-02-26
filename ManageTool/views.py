@@ -13,7 +13,7 @@ from django.views.generic import UpdateView, ListView, CreateView, DetailView
 from jsignature.forms import JSignatureField
 
 from ManageTool.extract import json_extract
-from ManageTool.forms import ContractEmploymentForm
+from ManageTool.forms import ContractEmploymentForm, ContractSignForm
 
 from ManageTool.items_funcs import update_items
 from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications, ContractEmployment
@@ -423,7 +423,7 @@ class SignContractView(View):
         user = request.user
         if user.is_authenticated:
             contract = ContractEmployment.objects.get(id=id)
-            signature = JSignatureField().widget.render('signature', None)
-            return render(request, 'sign_contract.html', {'contract': contract, 'signature': signature})
+            form = ContractSignForm()
+            return render(request, 'sign_contract.html', {'contract': contract, 'form': form})
         else:
             return redirect('login')
