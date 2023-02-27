@@ -55,6 +55,8 @@
                 {{ order.house_number }}{% endif %}
                 <a href="http://maps.google.com/maps?t=m&amp;q={{ order.street }}&nbsp;
 
+
+
                         {{ order.street_number }}{% if order.house_number %}/{{ order.house_number }}{% endif %}&#44;&nbsp;{{ order.zip_code }}&nbsp;
                         {% if order.town %}{{ order.town }}{% else %}{{ order.city }}{% endif %}"
                    target="_blank">Pokaż
@@ -94,17 +96,6 @@
         </tfoot>
     </table>
     <style>
-        body, h1, h2, h3 {
-            margin: 0;
-            font-size: 100%;
-            font-weight: normal;
-        }
-
-        body {
-            padding: 1.25em;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-        }
-
         h1 {
             font-size: 2em;
         }

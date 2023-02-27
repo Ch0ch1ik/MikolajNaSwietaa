@@ -424,6 +424,7 @@ class SignContractView(View):
         if user.is_authenticated:
             contract = ContractEmployment.objects.get(id=id)
             form = ContractSignForm()
-            return render(request, 'sign_contract.html', {'contract': contract, 'form': form})
+            form2 = ContractSignForm()
+            return render(request, 'sign_contract.html', {'contract': contract, 'form': form, 'form2': form2})
         else:
             return redirect('login')
