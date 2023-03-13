@@ -1,10 +1,6 @@
 <html lang="pl-PL">
-<head>
-    <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700,300italic,400italic,500italic,700italic&subset=latin,latin-ext" rel="stylesheet">
-
-</head>
-
+<meta charset="UTF-8">
+{% load static %}
 
 <body>
 <div>
@@ -276,21 +272,45 @@
 </body>
 
 
-<style>
+<style type="text/css">
+
     {#@font-face {#}
-    {#    font-family: my_font;#}
-    {#    src: url('{{ STATIC_ROOT }}/font/my_font.ttf');#}
-    {##}
-    {#}#}
-    {##}
-    {#body {#}
-    {#    font-family: my_font, serif;#}
-    {#    subset: latin-ext;#}
+    {#    font-family: PDF, "PDF";#}
+    {#    src: url(//font/my_font.ttf);#}
     {#}#}
 
-    h1 {
-        font-family: HYSMyeongJo-Medium, serif;
+    {#h1 {#}
+    {#    font-family: 'Lato';#}
+    {#}#}
+
+    {#@font-face {#}
+    {#    font-family: Roboto;#}
+    {#    src: url('../../static/font/Roboto-Regular.ttf');#}
+    {##}
+    {#}#}
+    {#@font-face {#}
+    {#    font-family: my_font;#}
+    {#    src: url('/static/font/my_font.ttf');#}
+    {##}
+    {#}#}
+    {#@font-face {#}
+    {#    font-family: Lato;#}
+    {#    src: url('/font/Lato-Regular.ttf');#}
+    {##}
+    {#}#}
+    {#@font-face {#}
+    {#    font-family: Anonymous_Pro, 'Anonymous_Pro';#}
+    {#    src: url('/font/Anonymous_Pro.ttf') format("truetype");#}
+    {##}
+    {#}#}
+
+    *{
+    font-family: HYSMyeongJo-Medium;
     }
+
+    {#h1 {#}
+    {#    font-family: Anonymous_Pro;#}
+    {#}#}
 
     .agreementdiv {
         border-radius: 25px;
