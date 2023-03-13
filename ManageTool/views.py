@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -17,6 +18,7 @@ from ManageTool.forms import ContractEmploymentForm, ContractSignForm
 
 from ManageTool.items_funcs import update_items
 from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications, ContractEmployment
+from MikolajNaSwieta.utils import render_to_pdf
 
 
 # Create your views here.
@@ -58,6 +60,7 @@ class IndexView(View):
             orders = Order.objects.filter(assigned_to=user).order_by('cancelled', 'accomplished')
             contracts = ContractEmployment.objects.filter(bounded_user=user)
             # check if user has any contract without signature
+            message = None
             for contract in contracts:
                 if contract.signature is None:
                     message = f'Masz niepodpisaną umowę nr {contract.id} . Proszę o uzupełnienie danych i podpis.'
@@ -325,7 +328,6 @@ class ContractsListView(View):
         return render(request, 'contracts.html', {'contracts': contracts})
 
 
-
 class CreateContractEmploymentView(View):
 
     def get(self, request, id):
@@ -395,8 +397,6 @@ class EditContractEmploymentView(View):
             return render(request, 'contract_employment_form.html', {'form': form, 'contract': contract})
 
 
-
-
 class CreateUserView(View):
     pass
 
@@ -424,7 +424,77 @@ class SignContractView(View):
         if user.is_authenticated:
             contract = ContractEmployment.objects.get(id=id)
             form = ContractSignForm()
-            form2 = ContractSignForm()
-            return render(request, 'sign_contract.html', {'contract': contract, 'form': form, 'form2': form2})
+            message = "Proszę wybrać typ umowy"
+            return render(request, 'sign_contract.html', {'contract': contract, 'form': form, 'message': message})
         else:
             return redirect('login')
+
+    def post(self, request, id):
+        user = request.user
+        if user.is_authenticated:
+            form = ContractSignForm(request.POST)
+            contract = ContractEmployment.objects.get(id=id)
+            if form.is_valid():
+                contract.name_surname = form.cleaned_data['name_surname']
+                contract.street = form.cleaned_data['street']
+                contract.street_number = form.cleaned_data['street_number']
+                contract.house_number = form.cleaned_data['house_number']
+                contract.zip_code = form.cleaned_data['zip_code']
+                contract.town = form.cleaned_data['town']
+                contract.id_number = form.cleaned_data['id_number']
+                contract.pesel = form.cleaned_data['pesel']
+                contract.start_date = form.cleaned_data['start_date']
+                contract.end_date = form.cleaned_data['end_date']
+                contract.transport_form = form.cleaned_data['transport_form']
+                contract.account_number = form.cleaned_data['account_number']
+                contract.phone = form.cleaned_data['phone']
+                contract.email = form.cleaned_data['email']
+                contract.signature = form.cleaned_data['signature']
+                contract.type = request.GET.get('contract_type')
+                contract.concluded_date = form.cleaned_data['concluded_date']
+                contract.save()
+                return redirect('contracts')
+            else:
+                errors = form.errors
+                return render(request, 'sign_contract.html', {'contract': contract, 'form': form, 'errors': errors})
+        else:
+            return redirect('login')
+
+
+def show_contract(request):
+    user = request.user
+    if user.is_authenticated:
+        contract_type = request.GET.get('contract_type')
+        contract = ContractEmployment.objects.get(bounded_user=user)
+        if contract_type is not None:
+            form = ContractSignForm()
+            if contract_type == "0":
+                return render(request, 'contract_per_visit.html', {'contract': contract, 'form': form})
+            elif contract_type == "1":
+                return render(request, 'contract_per_hour.html', {'contract': contract, 'form': form})
+            else:
+                return HttpResponse("Proszę wybrać typ umowy")
+        else:
+            return HttpResponse("Proszę wybrać typ umowy")
+    else:
+        return redirect('login')
+
+
+class GeneratePdf(View):
+    def get(self, request, id):
+        contract = ContractEmployment.objects.get(id=id)
+        from MikolajNaSwieta import settings
+        data = {
+            'contract': contract,
+            'STATIC_ROOT': settings.STATIC_ROOT
+        }
+        if contract.type == "0":
+            pdf = render_to_pdf('pdf/contract_per_visit_pdf.html', data)
+        elif contract.type == "1":
+            pdf = render_to_pdf('pdf/contract_per_hour_pdf.html', data)
+        else:
+            return HttpResponse("Proszę wybrać typ umowy")
+        return HttpResponse(pdf, content_type='application/pdf')
+
+
+

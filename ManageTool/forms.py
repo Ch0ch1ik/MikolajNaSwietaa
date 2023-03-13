@@ -2,6 +2,7 @@ from django.forms import ModelForm, DateInput, NumberInput
 from django import forms
 from jsignature.widgets import JSignatureWidget
 
+
 from ManageTool.models import ContractEmployment
 
 
@@ -48,7 +49,7 @@ class ContractSignForm(ModelForm):
             'start_date': forms.DateInput(attrs={'type': 'date', 'required': 'required'}),
             'concluded_date': forms.DateInput(attrs={'type': 'date', 'required': 'required'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'required': 'required'}),
-            'signature': JSignatureWidget(attrs={'width': '100%', 'height': '200px', 'style': 'border: 1px solid black;', 'required': 'required'}),
+            'signature': JSignatureWidget(attrs={'width': '100%', 'height': '200px', 'style': 'border: 1px solid black;'}),
             'name_surname': forms.TextInput(attrs={'placeholder': 'Imię i nazwisko*', 'required': 'required'}),
             'street': forms.TextInput(attrs={'placeholder': 'Ulica*', 'required': 'required'}),
             'street_number': forms.TextInput(attrs={'placeholder': 'Numer domu*', 'required': 'required'}),
@@ -56,9 +57,9 @@ class ContractSignForm(ModelForm):
             'zip_code': forms.TextInput(attrs={'placeholder': 'Kod pocztowy*', 'required': 'required'}),
             'town': forms.TextInput(attrs={'placeholder': 'Miejscowość*', 'required': 'required'}),
             'id_number': forms.TextInput(attrs={'placeholder': 'Nr dowodu/paszportu*', 'required': 'required'}),
-            'pesel': forms.TextInput(attrs={'placeholder': 'nr PESEL*', 'required': 'required'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Numer telefonu*', 'required': 'required'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Adres e-mail*', 'required': 'required'}),
+            'pesel': forms.TextInput(attrs={'placeholder': 'nr PESEL*', 'required': 'required', 'pattern': '[0-9]{11}'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Numer telefonu*', 'required': 'required', 'pattern': '[0-9]{9}'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Adres e-mail*', 'required': 'required', 'pattern': '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'}),
             'account_number': forms.TextInput(attrs={'placeholder': 'Numer konta bankowego*', 'required': 'required', 'pattern': '([0-9]{26})(-[0-9]{2})?'}),
-            'transport_form': forms.Select(attrs={'required': 'required'}),
+            'transport_form': forms.Select(attrs={'required': 'required', 'onchange': 'show_transport()'}),
         }

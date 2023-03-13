@@ -54,7 +54,7 @@
                         {% else %}
                             <td style="color: red">NIE</td>
                         {% endif %}
-                        <td><a href="{% url 'contract_details' contract.id %}">Podgląd</a></td>
+                        <td><a href="{% url 'show_contract_pdf' contract.id %}">Podgląd</a></td>
                     {% else %}
                         <td style="color: red">NIE</td>
                         {% if contract.signed_by_employer %}

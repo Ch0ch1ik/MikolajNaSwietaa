@@ -1,0 +1,226 @@
+
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <h1 class="center" style="align-content: center">UMOWA O DZIEŁO</h1>
+        <br>
+        <br>
+        <br>
+        Umowa zawarta w dniu {{ contract.concluded_date }} r. w Warszawie pomiędzy:
+        <br>
+        <br>
+    </div>
+    <div>
+        {% if contract.employer == '0' %}
+            <div>Rimarif Partners Sp. z o.o., która jest właścicielem MikolajNaSwieta.pl, z siedzibą w Warszawie
+                przy
+                ulicy Corellego 9/4; 03-289 Warszawa, zarejestrowaną pod nr KRS 0000521195 w Sądzie Rejonowym
+                dla
+                m.st.
+                Warszawa XIII Wydział Gospodarczy Krajowego Rejestru Sądowego, NIP 5223018519. Kapitał zakładowy
+                20
+                000
+                PLN. Reprezentowana przez Prezesa Zarządu Pana Michała Witczak zwany w dalszej części Umowy
+                Zamawiającym,
+            </div>
+            <br>
+        {% else %}
+            <h2>TU DANE ZLECENIODAWCY</h2>
+        {% endif %}
+    </div>
+    <div>
+        a Panem/Panią
+        {{ contract.name_surname }}{{ contract.name.label }}<br>
+        zamieszkałą/zamieszkałym przy
+        <br>
+        {{ contract.street }} {{ contract.street_number }} / {{ contract.house_number }}
+        , {{ contract.town }} {{ contract.zip_code }}
+        <br>
+    </div>
+    <br>
+    <div>
+        legitymującą/legitymującym się dowodem osobistym /paszportem
+        {{ contract.id_number }} , PESEL: {{ contract.pesel }}<br>
+
+        zwaną/zwanym dalej Wykonawcą.
+        Zamawiający i Wykonawca są w dalszej części niniejszej umowy, zwanej dalej "Umową", określani łącznie
+        jako
+        "Strony", a osobno jako "Strona" umowy o następującej treści:
+    </div>
+    <br>
+    <div>
+        <p class="center"><br>§ 1 </p>
+        Zamawiający powierza wykonanie, a Wykonawca zobowiązuje się wykonać dzieło polegające na:
+        Odbywaniu artystycznych Wizyt Mikołaja w domach prywatny, zakładach pracy oraz placówkach edukacyjnych
+        czy
+        innych miejscach wyznaczonych przez Zamawiającego, takich jak roznoszenie ulotek czy rozdawanie
+        cukierków w
+        sposób artystyczny w przebraniu Świętego Mikołaja/Elfa/Śnieżynki.
+        <p class="center"><br>§ 2 </p>
+        <br>1. Wykonawca oświadcza, iż posiada wiedzę, kwalifikacje i umiejętności niezbędne dla wykonania
+        dzieła.
+        <br>2. Wykonawca oświadcza, że wykona dzieło w sposób staranny, sumienny i prawidłowy, zgodnie ze
+        specyfiką
+        dzieła oraz informacjami i wytycznymi ze strony Zamawiającego lub podmiotu trzeciego, na którego rzecz
+        dzieło jest wykonywane.
+        <br>3. Wykonawca oświadcza, że dzieło będzie wynikiem jego oryginalnej twórczości i nie będzie naruszać
+        praw
+        osób trzecich, w szczególności praw autorskich oraz dóbr osobistych, jak również, iż osobiste i
+        majątkowe
+        prawa autorskie do dzieła nie są ograniczone jakimikolwiek prawami osób trzecich. Wykonawca oświadcza
+        ponadto, że dzieło nie było publicznie rozpowszechnione lub udostępnione za pośrednictwem jakichkolwiek
+        środków przekazu lub rozpowszechniania.
+        <br>4. Wykonawca oświadcza, że wszelkie prawa autorskie związane z wykonywanym dziełem zostaje
+        przekazane na
+        rzecz Zamawiającego i nie będzie rościł żadnych praw do wykonanego dzieła w przyszłości.
+        <p class="center"><br>§ 3 </p>
+        <br>1. W razie stwierdzenia nieprawidłowości oświadczeń, o których mowa w § 2, lub też wad prawnych
+        dzieła,
+        Zamawiający będzie uprawniony do odstąpienia od umowy lub żądania zwrotu wypłaconego wynagrodzenia wraz
+        z
+        odsetkami w wysokości ustawowej od dnia zapłaty do dnia zwrotu wynagrodzenia. W każdym wypadku
+        określonym w
+        niniejszym ustępie, Zamawiający będzie także uprawniony do dochodzenia naprawienia szkody w pełnym
+        zakresie.
+        <br>2. Dzieło ma charakter indywidualny i jest przedmiotem prawa autorskiego.
+        <p class="center"><br>§ 4 </p>
+        <br>1. Dla wykonania dzieła Zamawiający zobowiązuje się wydać Wykonawcy w terminie do 7 dni przed
+        pierwszym
+        wykonaniem dzieła następujące materiały i narzędzia:
+        <br>1) Kubrak,
+        <br>2) Spodnie,
+        <br>3) Czapka,
+        <br>4) broda,
+        <br>5) peruka,
+        <br>6) rękawiczki białe (lewa i prawa)
+        <br>7) okulary bez szkieł,
+        <br>8) nakładki na buty sztuk 2,
+        <br>9) worek koloru czerwonego,
+        <br>10) pas,
+        <br>11) dzwonek
+        <br>12) „magiczny pył”
+        <br>2. Wykonawca zobowiązany jest przedstawić rozliczenie z otrzymanych materiałów i narzędzi oraz dbać
+        w
+        sposób staranny i sumienny o narzędzia przekazane przez Zmawiającego i zwrócić w stanie nienaruszonym
+        Zamawiającemu w dniu wydania dzieła.
+        <p class="center"><br>§ 5 </p>
+        <br>Termin rozpoczęcia dzieła strony ustaliły na dzień
+        {{ contract.start_date }} , a wykonania do dnia {{ contract.end_date }}
+        <p class="center"><br>§ 6 </p>
+        <br>Wykonawca ma prawo powierzyć wykonanie dzieła innej osobie, jednakże jest on odpowiedzialny wobec
+        Zamawiającego za jej działania, jak za własne oraz ma obowiązek poinformować niezwłocznie o tym fakcie
+        Zamawiającego.
+        <p class="center"><br>§ 7 </p>
+        <br>1. Zamawiający z tytułu należytej realizacji zadań, zobowiązuje się zapłacić Wykonawcy
+        wynagrodzenie:
+    </div>
+    <br>
+    <div>
+        {{ contract.transport_form }}
+    </div>
+    <br>
+    <div id="salary_own_car" hidden>
+        {{ contract.hourly_rate_own_car }} zł brutto
+        <br>
+        <b>za każdą przepracowaną godzinę. Godziny będą rozliczane z Wykonawca na podstawie przesłanego do
+            wykonawcy ostatecznego grafiku z miejscami artystycznego wykonania dzieła.</b>
+        <br>
+    </div>
+    <div id="salary_company_car" hidden>
+        {{ contract.hourly_rate_company_car }} zł brutto
+        <br>
+        <b>za każdą przepracowaną godzinę. Godziny będą rozliczane z Wykonawca na podstawie przesłanego do
+            wykonawcy ostatecznego grafiku z miejscami artystycznego wykonania dzieła.</b>
+        <br>
+    </div>
+    <div>
+        <b>w przypadku, gdy Wykonawca porusza się środkiem transportu zapewnionym przez Zamawiającego, Wykonawcy
+            nie
+            przysługuje, żaden zwrot z tytułu przejechanych kilometrów. Zamawiający zobowiązuje się do
+            umożliwienia
+            wynajęcia samochodu z firmy współpracującej z Zamawiającym. Natomiast w przypadku, gdy Wykonawca
+            korzysta z
+            własnego środka transportu to przysługuje mu zwrot kosztów za paliwo wyliczane od granicy miasta, w
+            którym
+            wykonuje dzieło odpowiednio w wysokości brutto</b>
+        <br>
+        {{ contract.fuel_refund }} zł/km
+        <br>
+        <br>
+    </div>
+    <div>
+        2. Wynagrodzenie Wykonawcy płatne będzie w terminie 14 dni od dnia zakończenia miesiąca kalendarzowego,
+        w
+        którym dzieło zostało wykonane i przyjęte przez Zamawiającego bez zastrzeżeń. Wynagrodzenie płatne
+        będzie
+        przelewem na konto wskazane przez Wykonawcę w § 7 pkt. 3.
+        <br><b>3. Nr konta Wykonawcy *:</b>
+        <br>
+        {{ contract.account_number }}
+        <br>
+    </div>
+    <br>
+    <div>
+        <p class="center"><br>§ 8 </p>
+        <br>1. W przypadku jakichkolwiek opóźnień, odstąpienia od umowy, rezygnacji lub nienależytej staranności
+        i
+        realizacji w wykonaniu dzieła Wykonawca zapłaci Zamawiającemu karę umowną w wysokości odpowiadającej
+        każdej
+        z Usług oferowanych przez Zamawiającego, a których to nie wykonał Wykonawca.
+        <br>2. W razie zwłoki w wykonaniu dzieła Zamawiający może odstąpić od umowy bez konieczności wyznaczania
+        dodatkowego terminu.
+        <p class="center"><br>§ 9 </p>
+        <br>1. W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy kodeksu cywilnego
+        oraz
+        ustawy o prawie autorskim i prawach pokrewnych.
+        <br>2. Wszelkie spory powstałe na gruncie niniejszej umowy rozpoznawane będą przez sąd powszechny
+        właściwy
+        ze względu na siedzibę Zamawiającego.
+        <br>3. Wszelkie powiadomienia wynikające z Umowy będą uznane za skuteczne o ile zostaną przekazane
+        Stronom
+        na wskazany w niniejszej umowie adres e-mail lub poprzez kontakt telefoniczny pod numerami telefonów lub
+        za
+        pośrednictwem poczty tradycyjnej na wskazany w umowie adres:
+        <br>a) dla Zamawiający 500 740 308 e-mail: biuro@mikolajnaswieta.pl
+        <br>b) dla Wykonawcy {{ contract.phone }} {{ contract.email }}
+        <br>
+        <br>4. Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
+        <br>
+        <p class="center"><br>§ 10 </p>
+        <br>Umowę sporządzono w formie elektronicznej. Wszystkie zapisy umowy są wiążące dla obu stron. Umowa
+        została
+        wysłana do obu stron w formie elektronicznej na podany adres email w umowie.
+        <p class="center"><br>§ 11 </p>
+        <br>Umowę uznaje się za wiążącą, gdy tylko Zamawiający prześle Wykonawcy Potwierdzenie w formie mailowej
+        Akceptacji umowy.
+    </div>
+    <br>
+    <br>
+    <div>
+        <br>
+        <br>
+        <br><b>Podpis Wykonawcy:</b>
+        <br>{{ contract.signature }}
+        <br>
+        <br>
+        <br><b>Podpis zleceniodawcy:</b>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        ------------------------------------------
+    </div>
+    {% include 'contract_attachments.html' %}
+    <div class="wrapper">
+        <a class="btn btn-primary" href="{{ request.META.HTTP_REFERER }}">Powrót</a>
+        <button class="btn btn-primary" type="submit">Wyślij</button>
+    </div>
+</form>
+
+
+<style>
+    form{
+        font-family: "Trebuchet MS" ;
+    }
+</style>

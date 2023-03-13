@@ -1,783 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
-    {{ form.media }}
+{{ form.media }}
+    {% if form.errors %}
+        {% for error in errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
     <label for="contract_type">Wybierz typ umowy: </label>
-    <select name="contract_type" id="contract_type">
+    <select name="contract_type" id="contract_type" onchange="show_contract()">
         <option value="">------------</option>
         <option value="0">Umowa o dzieło - stawka za wizytę</option>
         <option value="1">Umowa o dzieło - stawka za godzinę</option>
     </select>
-    <div class="agreementdiv" id="per_visit" hidden>
-        <form method="post">
-            {% csrf_token %}
-            <div>
-                <h1 class="center" style="align-content: center">UMOWA O DZIEŁO</h1>
-                <br>
-                <br>
-                <br>
-                Umowa zawarta w dniu {{ form.concluded_date }} r. w Warszawie pomiędzy:
-                <br>
-                <br>
-            </div>
-            <div>
-                {% if contract.employer == '0' %}
-                    <div>Rimarif Partners Sp. z o.o., która jest właścicielem MikolajNaSwieta.pl, z siedzibą w Warszawie
-                        przy
-                        ulicy Corellego 9/4; 03-289 Warszawa, zarejestrowaną pod nr KRS 0000521195 w Sądzie Rejonowym
-                        dla
-                        m.st.
-                        Warszawa XIII Wydział Gospodarczy Krajowego Rejestru Sądowego, NIP 5223018519. Kapitał zakładowy
-                        20
-                        000
-                        PLN. Reprezentowana przez Prezesa Zarządu Pana Michała Witczak zwany w dalszej części Umowy
-                        Zamawiającym,
-                    </div>
-                    <br>
-                {% else %}
-                    <h2>TU DANE ZLECENIODAWCY</h2>
-                {% endif %}
-            </div>
-            <div>
-                a Panem/Panią
-                {{ form.name_surname }}{{ form.name.label }}<br>
-                zamieszkałą/zamieszkałym przy
-                <br>
-                {{ form.street }} {{ form.street_number }} / {{ form.house_number }}
-                , {{ form.town }} {{ form.zip_code }}
-                <br>
-            </div>
-            <br>
-            <div>
-                legitymującą/legitymującym się dowodem osobistym /paszportem
-                {{ form.id_number }} , PESEL: {{ form.pesel }}<br>
 
-                zwaną/zwanym dalej Wykonawcą.
-                Zamawiający i Wykonawca są w dalszej części niniejszej umowy, zwanej dalej "Umową", określani łącznie
-                jako
-                "Strony", a osobno jako "Strona" umowy o następującej treści:
-            </div>
-            <br>
-            <div>
-                <p class="center"><br>§ 1 </p>
-                Zamawiający powierza wykonanie, a Wykonawca zobowiązuje się wykonać dzieło polegające na:
-                Odbywaniu artystycznych Wizyt Mikołaja w domach prywatny, zakładach pracy oraz placówkach edukacyjnych
-                czy
-                innych miejscach wyznaczonych przez Zamawiającego, takich jak roznoszenie ulotek czy rozdawanie
-                cukierków w
-                sposób artystyczny w przebraniu Świętego Mikołaja/Elfa/Śnieżynki.
-                <p class="center"><br>§ 2 </p>
-                <br>1. Wykonawca oświadcza, iż posiada wiedzę, kwalifikacje i umiejętności niezbędne dla wykonania
-                dzieła.
-                <br>2. Wykonawca oświadcza, że wykona dzieło w sposób staranny, sumienny i prawidłowy, zgodnie ze
-                specyfiką
-                dzieła oraz informacjami i wytycznymi ze strony Zamawiającego lub podmiotu trzeciego, na którego rzecz
-                dzieło jest wykonywane.
-                <br>3. Wykonawca oświadcza, że dzieło będzie wynikiem jego oryginalnej twórczości i nie będzie naruszać
-                praw
-                osób trzecich, w szczególności praw autorskich oraz dóbr osobistych, jak również, iż osobiste i
-                majątkowe
-                prawa autorskie do dzieła nie są ograniczone jakimikolwiek prawami osób trzecich. Wykonawca oświadcza
-                ponadto, że dzieło nie było publicznie rozpowszechnione lub udostępnione za pośrednictwem jakichkolwiek
-                środków przekazu lub rozpowszechniania.
-                <br>4. Wykonawca oświadcza, że wszelkie prawa autorskie związane z wykonywanym dziełem zostaje
-                przekazane na
-                rzecz Zamawiającego i nie będzie rościł żadnych praw do wykonanego dzieła w przyszłości.
-                <p class="center"><br>§ 3 </p>
-                <br>1. W razie stwierdzenia nieprawidłowości oświadczeń, o których mowa w § 2, lub też wad prawnych
-                dzieła,
-                Zamawiający będzie uprawniony do odstąpienia od umowy lub żądania zwrotu wypłaconego wynagrodzenia wraz
-                z
-                odsetkami w wysokości ustawowej od dnia zapłaty do dnia zwrotu wynagrodzenia. W każdym wypadku
-                określonym w
-                niniejszym ustępie, Zamawiający będzie także uprawniony do dochodzenia naprawienia szkody w pełnym
-                zakresie.
-                <br>2. Dzieło ma charakter indywidualny i jest przedmiotem prawa autorskiego.
-                <p class="center"><br>§ 4 </p>
-                <br>1. Dla wykonania dzieła Zamawiający zobowiązuje się wydać Wykonawcy w terminie do 7 dni przed
-                pierwszym
-                wykonaniem dzieła następujące materiały i narzędzia:
-                <br>1) Kubrak,
-                <br>2) Spodnie,
-                <br>3) Czapka,
-                <br>4) broda,
-                <br>5) peruka,
-                <br>6) rękawiczki białe (lewa i prawa)
-                <br>7) okulary bez szkieł,
-                <br>8) nakładki na buty sztuk 2,
-                <br>9) worek koloru czerwonego,
-                <br>10) pas,
-                <br>11) dzwonek
-                <br>12) „magiczny pył”
-                <br>2. Wykonawca zobowiązany jest przedstawić rozliczenie z otrzymanych materiałów i narzędzi oraz dbać
-                w
-                sposób staranny i sumienny o narzędzia przekazane przez Zmawiającego i zwrócić w stanie nienaruszonym
-                Zamawiającemu w dniu wydania dzieła.
-                <p class="center"><br>§ 5 </p>
-                <br>Termin rozpoczęcia dzieła strony ustaliły na dzień
-                {{ form.start_date }} , a wykonania do dnia {{ form.end_date }}
-                <p class="center"><br>§ 6 </p>
-                <br>Wykonawca ma prawo powierzyć wykonanie dzieła innej osobie, jednakże jest on odpowiedzialny wobec
-                Zamawiającego za jej działania, jak za własne oraz ma obowiązek poinformować niezwłocznie o tym fakcie
-                Zamawiającego.
-                <p class="center"><br>§ 7 </p>
-                <br>1. Zamawiający z tytułu należytej realizacji zadań, zobowiązuje się zapłacić Wykonawcy
-                wynagrodzenie:
-            </div>
-            <br>
-            <div>
-                {{ form.transport_form }}
-            </div>
-            <br>
-            <div id="salary_own_car" hidden>
-                <b>w zależności od typu wykonania prac dla Zamawiającego. Stawka podana jest brutto za każda jedną
-                    odbytą
-                    Wizytę Mikołaja na rzecz, klientów Zamawiającego:</b>
-                <br>
-                <br>
-                a) Wizyty w placówkach edukacyjnych, przedsiębiorstwach, instytucjach
-                <br>
-                {{ contract.visit_rate_own_car_firm }} zł brutto
-                <br>
-                <br>
-                b) Wizyty w domach prywatnych Wizyta SzybkiPrezent (10 min)
-                <br>
-                {{ contract.visit_rate_own_car_private_10min }} zł brutto
-                <br>
-                <br>
-                c) Wizyty w domach prywatnych Wizyta Standard (20 min.)
-                <br>
-                {{ contract.visit_rate_own_car_private_20min }} zł brutto
-                <br>
-                <br>
-                d) Wizyty w domach prywatnych Wizyta EkstraM (30 min.)
-                <br>
-                {{ contract.visit_rate_own_car_private_30min }} zł brutto
-                <br>
-                <br>
-                e) Wizyty w domach prywatnych Wizyta Long (60 min)
-                <br>
-                {{ contract.visit_rate_own_car_private_60min }} zł brutto
-                <br>
-                <br>
-            </div>
-            <div id="salary_company_car" hidden>
-                <b>w zależności od typu wykonania prac dla Zamawiającego. Stawka podana jest brutto za każda jedną
-                    odbytą
-                    Wizytę Mikołaja na rzecz, klientów Zamawiającego:</b>
-                <br>
-                <br>
-                a) Wizyty w placówkach edukacyjnych, przedsiębiorstwach, instytucjach
-                <br>
-                {{ contract.visit_rate_company_car_firm }} zł brutto
-                <br>
-                <br>
-                b) Wizyty w domach prywatnych Wizyta SzybkiPrezent (10 min)
-                <br>
-                {{ contract.visit_rate_company_car_private_10min }} zł brutto
-                <br>
-                <br>
-                c) Wizyty w domach prywatnych Wizyta Standard (20 min.)
-                <br>
-                {{ contract.visit_rate_company_car_private_20min }} zł brutto
-                <br>
-                <br>
-                d) Wizyty w domach prywatnych Wizyta EkstraM (30 min.)
-                <br>
-                {{ contract.visit_rate_company_car_private_30min }} zł brutto
-                <br>
-                <br>
-                e) Wizyty w domach prywatnych Wizyta Long (60 min)
-                <br>
-                {{ contract.visit_rate_company_car_private_60min }} zł brutto
-                <br>
-                <br>
-            </div>
-            <div>
-                <b>w przypadku, gdy Wykonawca porusza się środkiem transportu zapewnionym przez Zamawiającego, Wykonawcy
-                    nie
-                    przysługuje, żaden zwrot z tytułu przejechanych kilometrów. Zamawiający zobowiązuje się do
-                    umożliwienia
-                    wynajęcia samochodu z firmy współpracującej z Zamawiającym. Natomiast w przypadku, gdy Wykonawca
-                    korzysta z
-                    własnego środka transportu to przysługuje mu zwrot kosztów za paliwo wyliczane od granicy miasta, w
-                    którym
-                    wykonuje dzieło odpowiednio w wysokości brutto</b>
-                <br>
-                {{ contract.fuel_refund }} zł/km
-                <br>
-                <br>
-            </div>
-            <div>
-                2. Wynagrodzenie Wykonawcy płatne będzie w terminie 14 dni od dnia zakończenia miesiąca kalendarzowego,
-                w
-                którym dzieło zostało wykonane i przyjęte przez Zamawiającego bez zastrzeżeń. Wynagrodzenie płatne
-                będzie
-                przelewem na konto wskazane przez Wykonawcę w § 7 pkt. 3.
-                <br><b>3. Nr konta Wykonawcy *:</b>
-                <br>
-                {{ form.account_number }}
-                <br>
-            </div>
-            <br>
-            <div>
-                <p class="center"><br>§ 8 </p>
-                <br>1. W przypadku jakichkolwiek opóźnień, odstąpienia od umowy, rezygnacji lub nienależytej staranności
-                i
-                realizacji w wykonaniu dzieła Wykonawca zapłaci Zamawiającemu karę umowną w wysokości odpowiadającej
-                każdej
-                z Usług oferowanych przez Zamawiającego, a których to nie wykonał Wykonawca.
-                <br>2. W razie zwłoki w wykonaniu dzieła Zamawiający może odstąpić od umowy bez konieczności wyznaczania
-                dodatkowego terminu.
-                <p class="center"><br>§ 9 </p>
-                <br>1. W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy kodeksu cywilnego
-                oraz
-                ustawy o prawie autorskim i prawach pokrewnych.
-                <br>2. Wszelkie spory powstałe na gruncie niniejszej umowy rozpoznawane będą przez sąd powszechny
-                właściwy
-                ze względu na siedzibę Zamawiającego.
-                <br>3. Wszelkie powiadomienia wynikające z Umowy będą uznane za skuteczne o ile zostaną przekazane
-                Stronom
-                na wskazany w niniejszej umowie adres e-mail lub poprzez kontakt telefoniczny pod numerami telefonów lub
-                za
-                pośrednictwem poczty tradycyjnej na wskazany w umowie adres:
-                <br>a) dla Zamawiający 500 740 308 e-mail: biuro@mikolajnaswieta.pl
-                <br>b) dla Wykonawcy {{ form.phone }} {{ form.email }}
-                <br>
-                <br>4. Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
-                <br>
-                <p class="center"><br>§ 10 </p>
-                <br>Umowę sporządzono w formie elektronicznej. Wszystkie zapisy umowy są wiążące dla obu stron. Umowa
-                została
-                wysłana do obu stron w formie elektronicznej na podany adres email w umowie.
-                <p class="center"><br>§ 11 </p>
-                <br>Umowę uznaje się za wiążącą, gdy tylko Zamawiający prześle Wykonawcy Potwierdzenie w formie mailowej
-                Akceptacji umowy.
-            </div>
-            <br>
-            <div>
-
-            </div>
-            <br>
-            <div>
-                <br>
-                <br>
-                <br><b>Podpis Wykonawcy</b>:
-                <br>{{ form.signature }}
-                <br>
-                <br>
-                <br><b>Podpis zleceniodawcy:</b>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                ------------------------------------------
-            </div>
-            <div>
-                <br>Załączniki:
-                <br><br>
-                <p onclick="openForm('attachment1')" class="btn btn-secondary">Załącznik 1 - Oświadczenia o
-                    zachowanie poufności
-                </p>
-                <br>
-                <div id="attachment1" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 1</p>
-                    <p class="center">Oświadczenie o zachowanie poufności</p>
-                    Oświadczam, że:
-                    <br>
-                    <br>
-                    - zobowiązuję się do zachowania w tajemnicy wszystkich informacji i dokumentów ujawnionych mi lub
-                    wytworzonych przeze mnie lub przygotowanych przeze mnie w trakcie lub jako rezultat umowy i zgadzam
-                    się,
-                    że informacje te powinny być użyte tylko dla celów niniejszej umowy i nie mogą zostać ujawnione
-                    stronom
-                    trzecim,
-                    <br>
-                    <br>
-                    - nie będę zatrzymywać kopii jakichkolwiek pisemnych lub elektronicznych informacji związanych z
-                    umową.
-                    Powyższe zobowiązanie ma charakter bezterminowy i w szczególności dotyczy informacji i dokumentów,
-                    które
-                    stanowią tajemnice wynikające z przepisów prawa powszechnie obowiązującego.
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment1')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <input required type="checkbox" value="attachment1"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 1 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment2')" class="btn btn-secondary">Załącznik 2 – Zgoda na przetwarzanie
-                    danych osobowych RODO
-                </p>
-                <div id="attachment2" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 2</p>
-                    <p class="center">Zgoda na przetwarzanie danych osobowych</p>
-                    <br>
-                    Ja, niżej podpisana/ny wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z
-                    Rozporządzeniem
-                    Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób
-                    fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich
-                    danych
-                    oraz uchylenia dyrektywy 95/46/WE
-                    <br>
-                    Przez Rimarif Partners Sp. z o.o.z sziedzibą w Warszawie przy ulicy Corellego 9/4, 03-289
-                    <br>
-                    w celu realizacji umowy zawartej pomiędzy oświadczającym, a Rimarif Partners Sp. z o.o.
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment2')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment2"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 2 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment3')" class="btn btn-secondary">Załącznik 3 – Oświadczenie o
-                    niekaralności
-                </p>
-                <div id="attachment3" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 3</p>
-                    <p class="center">OŚWIADCZENIE O NIEKARALNOŚCI</p>
-                    <br>
-                    Ja niżej podpisany/a świadomy/a odpowiedzialności karnej wynikającej z art. 233 § 1 kodeksu karnego
-                    przewidującego karę pozbawienia wolności do lat 3 za składanie fałszywych zeznań.
-                    <br>
-                    <p class="center">o ś w i a d c z a m</p>
-                    <br>
-                    <br>- iż nie byłem/byłam karany/karana za przestępstwo lub przestępstwo skarbowe,
-                    <br>- iż nie byłem/byłam karany/karana za przestępstwo związane z gwałtem oraz pedofilią,
-                    <br>- nie jest prowadzone przeciwko mnie postępowanie o przestępstwo ścigane z oskarżenia
-                    publicznego
-                    lub przestępstwo skarbowe,
-                    <br>- posiadam pełną zdolność do czynności prawnych i korzystam z pełni praw publicznych
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment3')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment3"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 3 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment4')" class="btn btn-secondary">Załącznik 4 – Oświadczenie wykonawcy
-                    dla celów podatkowych
-                </p>
-                <div id="attachment4" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 4</p>
-                    <p class="center">OŚWIADCZENIE WYKONAWCY DLA CELÓW PODATKOWYCH</p>
-                    <br>
-                    Prosimy o uzupełnienie wszystkich pól oznaczonych (*)
-                    <br>
-                    <b>DANE OSOBOWE WYKONAWCY</b>
-                    <br>
-                    <br>
-                    <br>-
-                    <br>-
-                    <br>-
-                    <br>-
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment4')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment4"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 4 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-            </div>
-
-
-            <div class="wrapper">
-                <a class="btn btn-primary" href="{{ request.META.HTTP_REFERER }}">Powrót</a>
-                <button class="btn btn-primary" type="submit">Wyślij</button>
-            </div>
-        </form>
+    <div class="agreementdiv" id="agreementdiv">
+    {% if message %}{{ message }}{% endif %}
     </div>
-    <div class="agreementdiv" id="per_hour" hidden>
-        <form method="post">
-            {% csrf_token %}
-            <div>
-                <h1 class="center" style="align-content: center">UMOWA O DZIEŁO</h1>
-                <br>
-                <br>
-                <br>
-                Umowa zawarta w dniu {{ form2.concluded_date }} r. w Warszawie pomiędzy:
-                <br>
-                <br>
-            </div>
-            <div>
-                {% if contract.employer == '0' %}
-                    <div>Rimarif Partners Sp. z o.o., która jest właścicielem MikolajNaSwieta.pl, z siedzibą w Warszawie
-                        przy
-                        ulicy Corellego 9/4; 03-289 Warszawa, zarejestrowaną pod nr KRS 0000521195 w Sądzie Rejonowym
-                        dla
-                        m.st.
-                        Warszawa XIII Wydział Gospodarczy Krajowego Rejestru Sądowego, NIP 5223018519. Kapitał zakładowy
-                        20
-                        000
-                        PLN. Reprezentowana przez Prezesa Zarządu Pana Michała Witczak zwany w dalszej części Umowy
-                        Zamawiającym,
-                    </div>
-                    <br>
-                {% else %}
-                    <h2>TU DANE ZLECENIODAWCY</h2>
-                {% endif %}
-            </div>
-            <div>
-                a Panem/Panią
-                {{ form2.name_surname }}{{ form2.name.label }}<br>
-                zamieszkałą/zamieszkałym przy
-                <br>
-                {{ form2.street }} {{ form2.street_number }} / {{ form2.house_number }}
-                , {{ form2.town }} {{ form2.zip_code }}
-                <br>
-            </div>
-            <br>
-            <div>
-                legitymującą/legitymującym się dowodem osobistym /paszportem
-                {{ form2.id_number }} , PESEL: {{ form2.pesel }}<br>
-
-                zwaną/zwanym dalej Wykonawcą.
-                Zamawiający i Wykonawca są w dalszej części niniejszej umowy, zwanej dalej "Umową", określani łącznie
-                jako
-                "Strony", a osobno jako "Strona" umowy o następującej treści:
-            </div>
-            <br>
-            <div>
-                <p class="center"><br>§ 1 </p>
-                Zamawiający powierza wykonanie, a Wykonawca zobowiązuje się wykonać dzieło polegające na:
-                Odbywaniu artystycznych Wizyt Mikołaja w domach prywatny, zakładach pracy oraz placówkach edukacyjnych
-                czy
-                innych miejscach wyznaczonych przez Zamawiającego, takich jak roznoszenie ulotek czy rozdawanie
-                cukierków w
-                sposób artystyczny w przebraniu Świętego Mikołaja/Elfa/Śnieżynki.
-                <p class="center"><br>§ 2 </p>
-                <br>1. Wykonawca oświadcza, iż posiada wiedzę, kwalifikacje i umiejętności niezbędne dla wykonania
-                dzieła.
-                <br>2. Wykonawca oświadcza, że wykona dzieło w sposób staranny, sumienny i prawidłowy, zgodnie ze
-                specyfiką
-                dzieła oraz informacjami i wytycznymi ze strony Zamawiającego lub podmiotu trzeciego, na którego rzecz
-                dzieło jest wykonywane.
-                <br>3. Wykonawca oświadcza, że dzieło będzie wynikiem jego oryginalnej twórczości i nie będzie naruszać
-                praw
-                osób trzecich, w szczególności praw autorskich oraz dóbr osobistych, jak również, iż osobiste i
-                majątkowe
-                prawa autorskie do dzieła nie są ograniczone jakimikolwiek prawami osób trzecich. Wykonawca oświadcza
-                ponadto, że dzieło nie było publicznie rozpowszechnione lub udostępnione za pośrednictwem jakichkolwiek
-                środków przekazu lub rozpowszechniania.
-                <br>4. Wykonawca oświadcza, że wszelkie prawa autorskie związane z wykonywanym dziełem zostaje
-                przekazane na
-                rzecz Zamawiającego i nie będzie rościł żadnych praw do wykonanego dzieła w przyszłości.
-                <p class="center"><br>§ 3 </p>
-                <br>1. W razie stwierdzenia nieprawidłowości oświadczeń, o których mowa w § 2, lub też wad prawnych
-                dzieła,
-                Zamawiający będzie uprawniony do odstąpienia od umowy lub żądania zwrotu wypłaconego wynagrodzenia wraz
-                z
-                odsetkami w wysokości ustawowej od dnia zapłaty do dnia zwrotu wynagrodzenia. W każdym wypadku
-                określonym w
-                niniejszym ustępie, Zamawiający będzie także uprawniony do dochodzenia naprawienia szkody w pełnym
-                zakresie.
-                <br>2. Dzieło ma charakter indywidualny i jest przedmiotem prawa autorskiego.
-                <p class="center"><br>§ 4 </p>
-                <br>1. Dla wykonania dzieła Zamawiający zobowiązuje się wydać Wykonawcy w terminie do 7 dni przed
-                pierwszym
-                wykonaniem dzieła następujące materiały i narzędzia:
-                <br>1) Kubrak,
-                <br>2) Spodnie,
-                <br>3) Czapka,
-                <br>4) broda,
-                <br>5) peruka,
-                <br>6) rękawiczki białe (lewa i prawa)
-                <br>7) okulary bez szkieł,
-                <br>8) nakładki na buty sztuk 2,
-                <br>9) worek koloru czerwonego,
-                <br>10) pas,
-                <br>11) dzwonek
-                <br>12) „magiczny pył”
-                <br>2. Wykonawca zobowiązany jest przedstawić rozliczenie z otrzymanych materiałów i narzędzi oraz dbać
-                w
-                sposób staranny i sumienny o narzędzia przekazane przez Zmawiającego i zwrócić w stanie nienaruszonym
-                Zamawiającemu w dniu wydania dzieła.
-                <p class="center"><br>§ 5 </p>
-                <br>Termin rozpoczęcia dzieła strony ustaliły na dzień
-                {{ form2.start_date }} , a wykonania do dnia {{ form2.end_date }}
-                <p class="center"><br>§ 6 </p>
-                <br>Wykonawca ma prawo powierzyć wykonanie dzieła innej osobie, jednakże jest on odpowiedzialny wobec
-                Zamawiającego za jej działania, jak za własne oraz ma obowiązek poinformować niezwłocznie o tym fakcie
-                Zamawiającego.
-                <p class="center"><br>§ 7 </p>
-                <br>1. Zamawiający z tytułu należytej realizacji zadań, zobowiązuje się zapłacić Wykonawcy
-                wynagrodzenie:
-            </div>
-            <br>
-            <div>
-                {{ form2.transport_form }}
-            </div>
-            <br>
-            <div id="salary_own_car2" hidden>
-                {{ contract.hourly_rate_own_car }} zł brutto
-                <br>
-                <b>za każdą przepracowaną godzinę. Godziny będą rozliczane z Wykonawca na podstawie przesłanego do
-                    wykonawcy ostatecznego grafiku z miejscami artystycznego wykonania dzieła.</b>
-                <br>
-            </div>
-            <div id="salary_company_car2" hidden>
-                {{ contract.hourly_rate_company_car }} zł brutto
-                <br>
-                <b>za każdą przepracowaną godzinę. Godziny będą rozliczane z Wykonawca na podstawie przesłanego do
-                    wykonawcy ostatecznego grafiku z miejscami artystycznego wykonania dzieła.</b>
-                <br>
-            </div>
-            <div>
-                <b>w przypadku, gdy Wykonawca porusza się środkiem transportu zapewnionym przez Zamawiającego, Wykonawcy
-                    nie
-                    przysługuje, żaden zwrot z tytułu przejechanych kilometrów. Zamawiający zobowiązuje się do
-                    umożliwienia
-                    wynajęcia samochodu z firmy współpracującej z Zamawiającym. Natomiast w przypadku, gdy Wykonawca
-                    korzysta z
-                    własnego środka transportu to przysługuje mu zwrot kosztów za paliwo wyliczane od granicy miasta, w
-                    którym
-                    wykonuje dzieło odpowiednio w wysokości brutto</b>
-                <br>
-                {{ contract.fuel_refund }} zł/km
-                <br>
-                <br>
-            </div>
-            <div>
-                2. Wynagrodzenie Wykonawcy płatne będzie w terminie 14 dni od dnia zakończenia miesiąca kalendarzowego,
-                w
-                którym dzieło zostało wykonane i przyjęte przez Zamawiającego bez zastrzeżeń. Wynagrodzenie płatne
-                będzie
-                przelewem na konto wskazane przez Wykonawcę w § 7 pkt. 3.
-                <br><b>3. Nr konta Wykonawcy *:</b>
-                <br>
-                {{ form2.account_number }}
-                <br>
-            </div>
-            <br>
-            <div>
-                <p class="center"><br>§ 8 </p>
-                <br>1. W przypadku jakichkolwiek opóźnień, odstąpienia od umowy, rezygnacji lub nienależytej staranności
-                i
-                realizacji w wykonaniu dzieła Wykonawca zapłaci Zamawiającemu karę umowną w wysokości odpowiadającej
-                każdej
-                z Usług oferowanych przez Zamawiającego, a których to nie wykonał Wykonawca.
-                <br>2. W razie zwłoki w wykonaniu dzieła Zamawiający może odstąpić od umowy bez konieczności wyznaczania
-                dodatkowego terminu.
-                <p class="center"><br>§ 9 </p>
-                <br>1. W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy kodeksu cywilnego
-                oraz
-                ustawy o prawie autorskim i prawach pokrewnych.
-                <br>2. Wszelkie spory powstałe na gruncie niniejszej umowy rozpoznawane będą przez sąd powszechny
-                właściwy
-                ze względu na siedzibę Zamawiającego.
-                <br>3. Wszelkie powiadomienia wynikające z Umowy będą uznane za skuteczne o ile zostaną przekazane
-                Stronom
-                na wskazany w niniejszej umowie adres e-mail lub poprzez kontakt telefoniczny pod numerami telefonów lub
-                za
-                pośrednictwem poczty tradycyjnej na wskazany w umowie adres:
-                <br>a) dla Zamawiający 500 740 308 e-mail: biuro@mikolajnaswieta.pl
-                <br>b) dla Wykonawcy {{ form2.phone }} {{ form2.email }}
-                <br>
-                <br>4. Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
-                <br>
-                <p class="center"><br>§ 10 </p>
-                <br>Umowę sporządzono w formie elektronicznej. Wszystkie zapisy umowy są wiążące dla obu stron. Umowa
-                została
-                wysłana do obu stron w formie elektronicznej na podany adres email w umowie.
-                <p class="center"><br>§ 11 </p>
-                <br>Umowę uznaje się za wiążącą, gdy tylko Zamawiający prześle Wykonawcy Potwierdzenie w formie mailowej
-                Akceptacji umowy.
-            </div>
-            <br>
-            <div>
-
-            </div>
-            <br>
-            <div>
-                <br>
-                <br>
-                <br><b>Podpis Wykonawcy</b>:
-                <br>{{ form2.signature }}
-                <br>
-                <br>
-                <br><b>Podpis zleceniodawcy:</b>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                ------------------------------------------
-            </div>
-            <div>
-                <br>Załączniki:
-                <br><br>
-                <p onclick="openForm('attachment1')" class="btn btn-secondary">Załącznik 1 - Oświadczenia o
-                    zachowanie poufności
-                </p>
-                <br>
-                <div id="attachment1" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 1</p>
-                    <p class="center">Oświadczenie o zachowanie poufności</p>
-                    Oświadczam, że:
-                    <br>
-                    <br>
-                    - zobowiązuję się do zachowania w tajemnicy wszystkich informacji i dokumentów ujawnionych mi lub
-                    wytworzonych przeze mnie lub przygotowanych przeze mnie w trakcie lub jako rezultat umowy i zgadzam
-                    się,
-                    że informacje te powinny być użyte tylko dla celów niniejszej umowy i nie mogą zostać ujawnione
-                    stronom
-                    trzecim,
-                    <br>
-                    <br>
-                    - nie będę zatrzymywać kopii jakichkolwiek pisemnych lub elektronicznych informacji związanych z
-                    umową.
-                    Powyższe zobowiązanie ma charakter bezterminowy i w szczególności dotyczy informacji i dokumentów,
-                    które
-                    stanowią tajemnice wynikające z przepisów prawa powszechnie obowiązującego.
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment1')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <input required type="checkbox" value="attachment1"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 1 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment2')" class="btn btn-secondary">Załącznik 2 – Zgoda na przetwarzanie
-                    danych osobowych RODO
-                </p>
-                <div id="attachment2" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 2</p>
-                    <p class="center">Zgoda na przetwarzanie danych osobowych</p>
-                    <br>
-                    Ja, niżej podpisana/ny wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z
-                    Rozporządzeniem
-                    Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób
-                    fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich
-                    danych
-                    oraz uchylenia dyrektywy 95/46/WE
-                    <br>
-                    Przez Rimarif Partners Sp. z o.o.z sziedzibą w Warszawie przy ulicy Corellego 9/4, 03-289
-                    <br>
-                    w celu realizacji umowy zawartej pomiędzy oświadczającym, a Rimarif Partners Sp. z o.o.
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment2')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment2"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 2 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment3')" class="btn btn-secondary">Załącznik 3 – Oświadczenie o
-                    niekaralności
-                </p>
-                <div id="attachment3" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 3</p>
-                    <p class="center">OŚWIADCZENIE O NIEKARALNOŚCI</p>
-                    <br>
-                    Ja niżej podpisany/a świadomy/a odpowiedzialności karnej wynikającej z art. 233 § 1 kodeksu karnego
-                    przewidującego karę pozbawienia wolności do lat 3 za składanie fałszywych zeznań.
-                    <br>
-                    <p class="center">o ś w i a d c z a m</p>
-                    <br>
-                    <br>- iż nie byłem/byłam karany/karana za przestępstwo lub przestępstwo skarbowe,
-                    <br>- iż nie byłem/byłam karany/karana za przestępstwo związane z gwałtem oraz pedofilią,
-                    <br>- nie jest prowadzone przeciwko mnie postępowanie o przestępstwo ścigane z oskarżenia
-                    publicznego
-                    lub przestępstwo skarbowe,
-                    <br>- posiadam pełną zdolność do czynności prawnych i korzystam z pełni praw publicznych
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment3')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment3"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 3 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-                <p onclick="openForm('attachment4')" class="btn btn-secondary">Załącznik 4 – Oświadczenie wykonawcy
-                    dla celów podatkowych
-                </p>
-                <div id="attachment4" class="form-popup" hidden>
-                    <p class="center">Załącznik nr 4</p>
-                    <p class="center">OŚWIADCZENIE WYKONAWCY DLA CELÓW PODATKOWYCH</p>
-                    <br>
-                    Prosimy o uzupełnienie wszystkich pól oznaczonych (*)
-                    <br>
-                    <b>DANE OSOBOWE WYKONAWCY</b>
-                    <br>
-                    <br>
-                    <br>-
-                    <br>-
-                    <br>-
-                    <br>-
-                    <br>
-                    <div style="display: flex; justify-content: right">
-                        <p class="btn cancel" onclick="closeForm('attachment4')"><b>Zamknij</b></p>
-                    </div>
-                </div>
-                <br>
-                <input required type="checkbox" value="attachment4"> Oświadczam, że zapoznałem się i akceptuję treść
-                załącznika
-                nr 4 oraz przesyłam swoje dane zgodnie ze stane faktycznym.
-                <br><br>
-            </div>
-
-
-            <div class="wrapper">
-                <a class="btn btn-primary" href="{{ request.META.HTTP_REFERER }}">Powrót</a>
-                <button class="btn btn-primary" type="submit">Wyślij</button>
-            </div>
-        </form>
-    </div>
-
 
 {% endblock %}
 
 {% block extra_js %}
     <script>
-        {#let select_transport_type = document.getElementById('id_transport_form');#}
-        {#select_transport_type.onchange{{ form.transport_type }} = function () {#}
-        {#    let own_car = document.getElementById('salary_own_car');#}
-        {#    let company_car = document.getElementById('salary_company_car');#}
-        {#    if (select_transport_type.value === '0') {#}
-        {#        own_car.setAttribute('hidden', 'hidden');#}
-        {#        company_car.setAttribute('hidden', 'hidden')#}
-        {#        own_car.removeAttribute('hidden');#}
-        {#    } else if (select_transport_type.value === '1') {#}
-        {#        company_car.setAttribute('hidden', 'hidden');#}
-        {#        own_car.setAttribute('hidden', 'hidden');#}
-        {#        company_car.removeAttribute('hidden');#}
-        {#    } else {#}
-        {#        company_car.setAttribute('hidden', 'hidden');#}
-        {#        own_car.setAttribute('hidden', 'hidden');#}
-        {#    }#}
-        {#}#}
+        function show_contract() {
+            let contract_type = document.getElementById('contract_type');
+            let params = new URLSearchParams();
+            params.append('contract_type', contract_type.value);
+            let address = '/show_contract/?' + params.toString();
+            console.log(params.toString());
+            fetch(address)
+                .then(response => response.text())
+                .then(data => document.getElementById("agreementdiv").innerHTML = data);
+        }
 
-        let contract_type = document.getElementById('contract_type');
-        contract_type.onchange = function () {
-            let per_visit = document.getElementById('per_visit');
-            let per_hour = document.getElementById('per_hour');
-            if (contract_type.value === '0') {
-                per_visit.setAttribute('hidden', 'hidden');
-                per_hour.setAttribute('hidden', 'hidden')
-                per_visit.removeAttribute('hidden');
-            } else if (contract_type.value === '1') {
-                per_visit.setAttribute('hidden', 'hidden');
-                per_hour.setAttribute('hidden', 'hidden');
-                per_hour.removeAttribute('hidden');
+       function show_transport() {
+            let transport_type = document.getElementById('id_transport_form');
+            let own_car = document.getElementById('salary_own_car');
+            let company_car = document.getElementById('salary_company_car');
+            if (transport_type.value === '0') {
+                own_car.setAttribute('hidden', 'hidden');
+                company_car.setAttribute('hidden', 'hidden')
+                own_car.removeAttribute('hidden');
+            } else if (transport_type.value === '1') {
+                company_car.setAttribute('hidden', 'hidden');
+                own_car.setAttribute('hidden', 'hidden');
+                company_car.removeAttribute('hidden');
             } else {
-                per_visit.setAttribute('hidden', 'hidden');
-                per_hour.setAttribute('hidden', 'hidden');
+                company_car.setAttribute('hidden', 'hidden');
+                own_car.setAttribute('hidden', 'hidden');
             }
         }
+
 
         function openForm(cos) {
             let x = document.getElementById(cos);
@@ -793,52 +65,77 @@
             x.setAttribute('hidden', 'hidden');
 
         }
+
+        let div_to_observe = document.getElementById('agreementdiv');
+        const config = {childList: true, subtree: true};
+
+        // Callback function to execute when mutations are observed
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === 'childList') {
+                    let counter = 0;
+                    function reload_js(src) {
+                        $('script[src="' + src + '"]').remove();
+                        $('<script>').attr('src', src).appendTo('head');
+                    }
+                    reload_js('/static/js/jSignature.min.js');
+                    reload_js('/static/js/django_jsignature.js');
+                    counter += 1;
+                    if (counter === 1) {
+                        observer.disconnect();
+                    }
+                    observer.observe(div_to_observe, config);
+                } else {
+                    console.log(`cos innego się wydarzyło: ${mutation.type}`);
+                }
+            }
+        };
+        // Create an observer instance linked to the callback function
+        const observer = new MutationObserver(callback);
+        // Start observing the target node for configured mutations
+        observer.observe(div_to_observe, config);
+
+
     </script>
 
-    {% block extra_styling %}
-        <style>
-            .agreementdiv {
-                border-radius: 25px;
-                border: 2px solid #73AD21;
-                padding: 20px;
-                width: auto;
-                height: auto;
-                text-align: justify;
-                margin: 10px;
-            }
+{% endblock %}
 
-            .left {
-                text-align: left;
-            }
+{% block extra_styling %}
 
-            .right {
-                text-align: right;
-            }
+<style>
+    .agreementdiv {
+        border-radius: 25px;
+        border: 2px solid #73AD21;
+        padding: 20px;
+        width: auto;
+        height: auto;
+        text-align: justify;
+        margin: 10px;
+    }
 
-            .justify {
-                text-align: justify;
-            }
+    .left {
+        text-align: left;
+    }
 
-            .center {
-                text-align: center;
-                font-weight: bold;
-            }
+    .right {
+        text-align: right;
+    }
 
-            .wrapper {
-                display: flex;
-                justify-content: space-between;
-            }
+    .justify {
+        text-align: justify;
+    }
 
-            {#.form-popup {#}
-            {#    display: none;#}
-            {#position: fixed;#}
-            {#bottom: 50%;#}
-            {#right: 50%;#}
-            {#    border: 3px solid black;#}
-            {#z-index: 9;#}
-            {#    background-color: white;#}
-            {#    padding: 20px;#}
-            {##}
-        </style>
-    {% endblock %}
+    .center {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+
+</style>
+
+
 {% endblock %}
