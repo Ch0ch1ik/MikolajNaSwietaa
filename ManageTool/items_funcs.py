@@ -62,7 +62,7 @@ def update_items(items):
                                 new_application.score += 3
                             new_application.work_24_12 = value
                         elif key == 'Opisz siebie i swoje doświadczenie w kilku słowach':
-                            new_application.desc_and_experience = value
+                            new_application.desc_and_experience = value.encode('unicode_escape')
                         elif key == 'CV (nie wymagane)':
                             pass
                         elif key == '':

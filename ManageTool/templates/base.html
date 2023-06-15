@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl-PL" style="font-family: sans-serif">
-
 {% include 'header.html' %}
 
 {#-------------------------------------------------------------------------------------------------------------#}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <div class="container-fluid p-0">
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    </ul>
+{% endif %}
 <body>
 <div style="width: 100%">
-{% block content %}
-{% endblock %}
+    {% block content %}
+    {% endblock %}
 </div>
 </body>
 

@@ -1,14 +1,20 @@
 import json
+import secrets
 from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 from django.views.generic import UpdateView, ListView, CreateView, DetailView
 from jsignature.forms import JSignatureField
@@ -18,7 +24,7 @@ from ManageTool.forms import ContractEmploymentForm, ContractSignForm
 
 from ManageTool.items_funcs import update_items
 from ManageTool.models import Vs1YkBaformsSubmissions, Order, Applications, ContractEmployment
-from MikolajNaSwieta.utils import render_to_pdf
+from MikolajNaSwieta.utils import render_to_pdf, token_generator
 
 
 # Create your views here.
@@ -58,13 +64,17 @@ class IndexView(View):
                            'visit_types': visit_types, 'santas': santas})
         else:
             orders = Order.objects.filter(assigned_to=user).order_by('cancelled', 'accomplished')
-            contracts = ContractEmployment.objects.filter(bounded_user=user)
-            # check if user has any contract without signature
-            message = None
-            for contract in contracts:
-                if contract.signature is None:
-                    message = f'Masz niepodpisaną umowę nr {contract.id} . Proszę o uzupełnienie danych i podpis.'
-            return render(request, 'user_main.html', {'orders': orders, 'contracts': contracts, 'message': message})
+            if orders.first() is None:
+                messages.info(request, 'Twoje konto nie ma jeszcze przypisanych wizyt')
+            # contracts = ContractEmployment.objects.filter(bounded_user=user)
+            # # check if user has any contract without signature
+            # if contracts.first() is None:
+            #     messages.info(request, 'Twoje konto nie ma jeszcze przypisanych umów')
+            # else:
+            #     for contract in contracts:
+            #         if contract.signature is None:
+            #             messages.warning(request, f'Masz niepodpisaną umowę nr {contract.id} . Proszę o uzupełnienie danych i podpis.')
+            return render(request, 'user_main.html', {'orders': orders})
 
     def post(self, request):
         user_id = int(request.POST['assign'])
@@ -325,6 +335,8 @@ class ContractsListView(View):
             contracts = ContractEmployment.objects.all()
         else:
             contracts = ContractEmployment.objects.filter(bounded_user=user)
+            if contracts.first() is None:
+                messages.info(request, 'Nie masz jeszcze przypisanych umów')
         return render(request, 'contracts.html', {'contracts': contracts})
 
 
@@ -398,7 +410,81 @@ class EditContractEmploymentView(View):
 
 
 class CreateUserView(View):
-    pass
+    def get(self, request):
+        return render(request, 'create_user_form.html')
+
+    def post(self, request):
+        email = request.POST.get('email', False)
+        emails = User.objects.all().values_list('email', flat=True)
+
+        if email not in emails:
+            account_type = request.POST['account_type']
+            password = secrets.token_urlsafe(13)
+            new_user = User.objects.create_user(username=email, email=email, password=password)
+            if account_type == 'Franczyzobiorca':
+                new_user.is_staff = True
+            new_user.is_active = False
+            new_user.save()
+
+            uidb64 = urlsafe_base64_encode(force_bytes(new_user.pk))
+
+            domain = get_current_site(request).domain
+            link = reverse('activate', kwargs={'uidb64': uidb64, 'token': token_generator.make_token(new_user)})
+
+            activate_url = 'http://' + domain + link
+
+            email = EmailMessage(
+                'Aktywacja nowego konta',
+                'Witaj ' + new_user.username + ', użyj linku poniżej by aktywować konto\n' + activate_url,
+                to=[email],
+            )
+            email.send(fail_silently=False)
+            messages.success(request, 'Konto utworzone, link aktywacyjny wysłany na podany adres email')
+            return render(request, 'create_user_form.html')
+        else:
+            messages.error(request, 'Konto o takim adresie email już istnieje')
+            return render(request, 'create_user_form.html')
+
+
+class SetPasswordView(View):
+    def get(self, request):
+        user = request.user
+        return render(request, 'set_password.html', {'user': user})
+
+    def post(self, request):
+        logged_user = request.user
+        user = User.objects.get(id=logged_user.id)
+        password = request.POST['password']
+        password2 = request.POST['password2']
+        if user.is_authenticated and user.is_active and password and password == password2:
+            user.set_password(password)
+            messages.success(request, 'Hasło ustawione poprawnie')
+            return render(request, 'index.html')
+        elif password != password2:
+            messages.error(request, 'Podane hasła różnią się, spróbuj ponownie')
+            return render(request, 'set_password.html')
+        else:
+            messages.error(request, 'Wystąpił błąd, użytkownik nieaktywny bądź nie posiada uprawnień')
+            return render(request, 'set_password.html')
+
+
+class VerificationView(View):
+    def get(self, request, uidb64, token):
+        try:
+
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        if user is not None and token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            login(request, user)
+            messages.success(request, 'Konto aktywne, ustaw swoje hasło')
+            return redirect(reverse('set_password'))
+        else:
+            messages.error(request, 'Niepoprawny link aktywacyjny')
+            return render(request, 'base.html')
 
 
 class CreateContractForUserView(View):
@@ -483,10 +569,8 @@ def show_contract(request):
 class GeneratePdf(View):
     def get(self, request, id):
         contract = ContractEmployment.objects.get(id=id)
-        from MikolajNaSwieta import settings
         data = {
             'contract': contract,
-            'STATIC_ROOT': settings.STATIC_ROOT
         }
         if contract.type == "0":
             pdf = render_to_pdf('pdf/contract_per_visit_pdf.html', data)
@@ -495,6 +579,3 @@ class GeneratePdf(View):
         else:
             return HttpResponse("Proszę wybrać typ umowy")
         return HttpResponse(pdf, content_type='application/pdf')
-
-
-

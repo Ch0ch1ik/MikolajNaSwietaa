@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+    <h1>Utwórz nowego użytkownika </h1>
+    <br>
+    <div style="display: flex; margin: 50px">
+        <form method="post">{% csrf_token %}
+            <p><b>Adres email, na który zostanie utworzone konto:</b></p><br>
+            <label for="email">Adres email</label>
+            <input name="email" id="email" type="email">
+            <br>
+            <br>
+            <p><b>Typ konta:</b></p>
+            <label for="pracownik">Pracownik</label>
+            <input id="pracownik" name="account_type" type="radio" value="Pracownik">
+            <label for="franczyzobiorca">Franczyzobiorca</label>
+            <input id="franczyzobiorca" name="account_type" type="radio" value="Franczyzobiorca">
+            <br>
+            <br>
+            <input type="submit" value="Zapisz">
+        </form>
+    </div>
+
+{% endblock %}

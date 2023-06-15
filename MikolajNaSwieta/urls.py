@@ -50,4 +50,6 @@ urlpatterns = [
     path('search/', views.SearchView.as_view(), name='search'),
     path('update_all_data', views.update_all_data, name='update_all_data'),
     path('create_user/', views.CreateUserView.as_view(), name='create_user'),
+    path('activate/<uidb64>/<token>', views.VerificationView.as_view(), name='activate'),
+    path('set_passowrd', views.SetPasswordView.as_view(), name='set_password'),
 ]
