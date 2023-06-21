@@ -33,31 +33,38 @@ class Vs1YkBaformsItems(models.Model):
         db_table = 'vs1yk_baforms_items'
 
 
+class Province(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Order(models.Model):
     bounded_to = models.IntegerField()
-    type = models.CharField(max_length=255)
-    province = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    district = models.CharField(max_length=255, blank=True)
+    type = models.CharField(max_length=100)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, verbose_name="Województwo", blank=True, null=True)
+    city = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, blank=True)
     facility_name = models.CharField(max_length=255, blank=True)
-    street = models.CharField(max_length=255)
+    street = models.CharField(max_length=100)
     street_number = models.CharField(max_length=20)
     house_number = models.CharField(max_length=20, blank=True)
     zip_code = models.CharField(max_length=20)
-    town = models.CharField(max_length=255, blank=True)
-    arrival_fee = models.SmallIntegerField(default=0)
-    company_name = models.CharField(max_length=255, blank=True)
-    name_surname = models.CharField(max_length=255)
-    nip = models.CharField(max_length=255, blank=True)
+    town = models.CharField(max_length=50, blank=True)
+    arrival_fee = models.CharField(max_length=50)
+    company_name = models.CharField(max_length=100, blank=True)
+    name_surname = models.CharField(max_length=100)
+    nip = models.CharField(max_length=50, blank=True)
     facility_address = models.CharField(max_length=255, blank=True)
-    phone = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
-    visit_length = models.CharField(max_length=255)
-    visit_date = models.CharField(max_length=255)
-    visit_time = models.CharField(max_length=255)
-    pref_visit_time = models.CharField(max_length=255)
+    phone = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
+    visit_length = models.CharField(max_length=100)
+    visit_date = models.CharField(max_length=100)
+    visit_time = models.CharField(max_length=100)
+    pref_visit_time = models.CharField(max_length=100)
     additional_info = models.TextField()
-    order_details = models.JSONField(blank=True, null=True)
+    order_details = models.TextField(blank=True, null=True, max_length=255)
     marketing_approval = models.BooleanField(default=False)
     reminder_approval = models.BooleanField(default=False)
     products = models.JSONField(default=dict)
@@ -66,7 +73,7 @@ class Order(models.Model):
     cancelled = models.BooleanField(default=False)
     accomplished = models.BooleanField(default=False)
     assigned_to = models.ManyToManyField(User, default=None)
-    created = models.CharField(max_length=255, blank=True)
+    created = models.CharField(max_length=100, blank=True)
 
     class Meta:
         indexes = [models.Index(fields=['type', 'province']), ]
@@ -96,17 +103,17 @@ class Applications(models.Model):
     own_notes = models.TextField(blank=True)
 
 
-CONTRACT_TYPE = [('0', 'Umowa o dzieło stawka godzinowa'),
-                 ('1', 'Umowa o dzieło stawka za wizytę')]
-TRANSPORT_TYPE = [('0', 'Transport własny'), ('1', 'Transport pracodawcy')]
-EMPLOYER = [('0', 'Rimarif Partners Sp. z o.o.')]
+CONTRACT_TYPE = [(0, 'Umowa o dzieło stawka godzinowa'),
+                 (1, 'Umowa o dzieło stawka za wizytę')]
+TRANSPORT_TYPE = [(0, 'Transport własny'), ('1', 'Transport pracodawcy')]
+EMPLOYER = [(0, 'Rimarif Partners Sp. z o.o.')]
 
 
 # contract employment model
 class ContractEmployment(models.Model):
     bounded_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Pracownik',
                                      related_name='bounded_user')
-    type = models.CharField(max_length=255, choices=CONTRACT_TYPE, verbose_name='Typ umowy', blank=True, null=True)
+    type = models.IntegerField(choices=CONTRACT_TYPE, verbose_name='Typ umowy', blank=True, null=True)
     created = models.DateField(auto_now_add=True, verbose_name='Utowrzono')
     concluded_date = models.DateField(verbose_name='Data zawarcia umowy', blank=True, null=True)
     name_surname = models.CharField(max_length=255, verbose_name='Imię i nazwisko', blank=True, null=True)
@@ -120,17 +127,18 @@ class ContractEmployment(models.Model):
                              validators=[MinLengthValidator(11), MaxLengthValidator(11)])
     start_date = models.DateField(blank=True, null=True, verbose_name='Data rozpoczęcia pracy')
     end_date = models.DateField(blank=True, null=True, verbose_name='Data zakończenia pracy')
-    transport_form = models.CharField(max_length=255, choices=TRANSPORT_TYPE, verbose_name='Forma transportu',
-                                      blank=True, null=True)
+    transport_form = models.IntegerField(choices=TRANSPORT_TYPE, verbose_name='Forma transportu',
+                                         blank=True, null=True)
     fuel_refund = models.FloatField(default=0.75, help_text='zł/km',
                                     verbose_name='Zwrot kosztów paliwa')
     account_number = models.CharField(max_length=255, verbose_name='Numer konta bankowego', blank=True, null=True,
                                       unique=True, validators=[MinLengthValidator(26), MaxLengthValidator(26)])
-    phone = models.CharField(max_length=255, verbose_name='Numer telefonu', blank=True, null=True)
+    phone = models.CharField(max_length=100, verbose_name='Numer telefonu', blank=True, null=True)
     email = models.EmailField(max_length=255, verbose_name='Adres e-mail', validators=[validate_email])
     signature = JSignatureField(verbose_name='Podpis pracownika', blank=True, null=True)
-    employer = models.CharField(max_length=255, choices=EMPLOYER, verbose_name='Nazwa zamawiającego', default='0',
-                                blank=True, null=True)
+    employer = models.IntegerField(choices=EMPLOYER, verbose_name='Nazwa zamawiającego',
+                                   default='Rimarif Partners Sp. z o.o.',
+                                   blank=True, null=True)
     hourly_rate_own_car = models.FloatField(default=106, help_text='zł brutto',
                                             verbose_name='Stawka godzinowa (własny samochód)')
     hourly_rate_company_car = models.FloatField(default=85, help_text='zł brutto',
